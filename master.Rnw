@@ -1,0 +1,82 @@
+\documentclass[12pt]{article}
+\usepackage[brazilian, brazil]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[top = 2.5cm, left = 2.5cm, right = 2.5cm, bottom = 2.5cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage[normalem]{ulem}
+\usepackage{breqn}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\setlength\parindent{0pt}
+\newcommand{\eqnb}{\begin{equation}}
+\newcommand{\eqne}{\end{equation}}
+\newcommand{\eqnbs}{\begin{equation*}}
+\newcommand{\eqnes}{\end{equation*}}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+\title{  
+ \normalfont \normalsize 
+ \textsc{est171 - Aprendizado de Máquina} \\
+ Departamento de Estatística \\
+ Universidade Federal de Minas Gerais \\ [25pt]
+ \horrule{.5pt} \\ [.4cm]
+ \huge Lista  1 \\
+ \horrule{2pt} \\[ .5cm]}
+ 
+\author{Henrique Aparecido Laureano \and Arthur Tarso Rasgo}
+\date{\normalsize Setembro de 2016}
+
+\begin{document}
+
+\maketitle
+
+\vspace{\fill}
+
+\tableofcontents
+
+\horrule{1pt} \\
+
+\newpage
+
+<<setup, include=FALSE>>=
+library(knitr)
+
+tema <- knit_theme$get("acid")
+
+knit_theme$set(tema)
+
+opts_chunk$set(size = 'small'
+               , cache = TRUE
+               , cache.path = 'cache/'
+               , comment = NA
+               , warning = FALSE
+               , message = FALSE
+               , fig.align = 'center'
+               , fig.width = 8
+               , fig.height = 4.5
+               , dpi = 100
+               , fig.path = 'iBagens/'
+               , fig.pos = 'H'
+               , background = '#ffffff'
+               , results = 'hold'
+               , fig.show = 'hold')
+@
+
+\section*{Exercício I}
+\addcontentsline{toc}{section}{Exercício I}
+
+\horrule{1pt} \\
+
+\section*{Exercício II}
+\addcontentsline{toc}{section}{Exercício II}
+
+\horrule{1pt} \\
+
+\end{document}

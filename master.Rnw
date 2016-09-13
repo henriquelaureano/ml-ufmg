@@ -30,7 +30,7 @@
  \huge Lista  1 \\
  \horrule{2pt} \\[ .5cm]}
  
-\author{Henrique Aparecido Laureano \and Arthur Tarso Rasgo}
+\author{Henrique Aparecido Laureano \and Arthur Tarso Rego}
 \date{\normalsize Setembro de 2016}
 
 \begin{document}
@@ -74,9 +74,962 @@ opts_chunk$set(size = 'small'
 
 \horrule{1pt} \\
 
+\textbf{Os dados \texttt{worldDevelopmentIndicators.csv} contém os dados do PIB
+        per capita (\(X\)) e a expectativa de vida (\(Y\)) de diversos países.
+        O objetivo é criar preditores de \(Y\) com base em \(X\). Em aula vimos
+        como isso pode ser feito através de polinômios. Aqui, faremos isso via
+        expansões de Fourier.}
+
+<<>>=
+# <code r> ================================================================== #
+path <- "C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/"
+
+data1 <- read.csv(paste0(path, "worldDevelopmentIndicators.csv"))
+
+summary(data1)
+# </code r> ================================================================= #
+@
+
+\textbf{a) Normalize a covariável de modo que \(x \in (0, 1)\). Para isso,
+           faça \(x = (x - x_{{\rm min}}) / (x_{{\rm max}} - x_{{\rm min}})\),
+           em que \(x_{{\rm min}}\) e \(x_{{\rm max}}\) são os valores mínimos
+           e máximos de \(x\) segundo a amostra usada.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+names(data1)[3] <- "X"
+
+data1$Xn <- with(data1, ( X - min(X) ) / ( max(X) - min(X) ) )
+
+summary(data1$Xn)
+# </code r> ================================================================= #
+@
+
+\textbf{b) Usando o método dos mínimos quadrados e a validação cruzada do tipo
+           \textit{leave-one-out}, estime o erro quadrático médio das
+           regressões}
+\begin{align*}
+ g(x) & = \\
+      & \hat{\beta}_{0}
+        + \hat{\beta}_{1}{\rm sin}(2\pi x) + \hat{\beta}_{2}{\rm cos}(2\pi x)
+        + \hat{\beta}_{3}{\rm sin}(2\pi 2x) + \hat{\beta}_{4}{\rm cos}(2\pi 2x)
+        \\
+      & \hskip .4cm
+        + ...
+        + \hat{\beta}_{2p-1}{\rm sin}(2\pi px)
+        + \hat{\beta}_{2p}{\rm cos}(2\pi px)
+\end{align*}
+
+\textbf{para \(p = 1, ..., 30\).}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+library(cvTools)
+
+Y <- data1[ , 2] ; X <- data1[ , 3] ; Xn <- data1[ , 4]
+
+mse <- 0
+
+for (p in 1:30){
+  
+  if (p == 1){
+    
+    seno <- sin(2 * pi * Xn) ; coss <- cos(2 * pi * Xn)
+    
+    XLM <- cbind(seno, coss)
+    
+    fit <- lm(Y ~ XLM)
+    
+    rmse <- repCV(fit, K = length(Xn)) ; mse[p] <- rmse$cv[[1]] ** 2}
+  
+  if (p > 1){
+    
+    seno <- sin(2 * pi * Xn) ; coss <- cos(2 * pi * Xn)
+    
+    XLM <- cbind(seno, coss)
+    
+    for (i in 2:p){
+      
+      seno <- sin(2 * pi * i * Xn) ; coss <- cos(2 * pi * i * Xn)
+      
+      XLM <- cbind(XLM, cbind(seno, coss))}
+    
+    fit <- lm(Y ~ XLM)
+    
+    rmse <- repCV(fit, K = length(Xn)) ; mse[p] <- rmse$cv[[1]] ** 2}}
+
+mse
+# </code r> ================================================================= #
+@
+
+\textbf{c) Plote o gráfico do risco estimado vs \(p\). Qual o valor de \(p\)
+           escolhido? Denotaremos ele por \(p_{esc}\)}
+
+\horrule{.5pt}
+
+<<fig.width=10>>=
+# <code r> ================================================================== #
+library(latticeExtra)
+
+print(xyplot(mse ~ 1:30
+             , type = c("l", "g")
+             , lwd = 2
+             , xlab = "p"
+             , ylab = "Risco ( R(g) )"
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(v = which.min(mse), col = 2, lwd = 2)})
+      , position = c(0, 0, .5, 1)
+      , more= TRUE)
+
+print(xyplot(mse[1:5] ~ 1:5
+             , type = c("l", "g")
+             , lwd = 2
+             , xlab = "p"
+             , ylab = "Risco ( R(g) )"
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(v = which.min(mse), col = 2, lwd = 2)
+               panel.abline(h = min(mse), col = 2, lwd = 2, lty = 2)
+               panel.text(4.25, 51, labels = paste(
+                 "Para p = 3,\nR(g) =", round(min(mse), 3)))})
+      , position = c(.5, 0, 1, 1))
+# </code r> ================================================================= #
+@
+
+\textbf{d) Plote as curvas ajustadas para \(p = 1\), \(p = p_{esc}\) e
+           \(p = 30\) sob o gráfico de dispersão de \(X\) por \(Y\). Qual curva
+           parece mais razoável? Use um grid de valores entre 0 e 1 para isso.
+           Como estes ajustes se comparam com o visto em aula via polinômios?
+           Discuta.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+# p = 1 ---------------------------------------------------------------------
+seno <- sin(2 * pi * Xn) ; coss <- cos(2 * pi * Xn)
+
+XLM <- cbind(seno, coss)
+
+p1 <- lm(Y ~ XLM)
+
+data.p1 <- data.frame(X = Xn, Y = fitted(p1))
+data.p1 <- data.p1[order(data.p1$X), ]
+
+# p = 3 ---------------------------------------------------------------------
+seno <- sin(2 * pi * Xn) ; coss <- cos(2 * pi * Xn)
+
+XLM <- cbind(seno, coss)
+
+for (i in 2:3){
+  
+  seno <- sin(2 * pi * i * Xn) ; coss <- cos(2 * pi * i * Xn)
+  
+  XLM <- cbind(XLM, cbind(seno,coss))}
+
+p3 <- lm(Y ~ XLM)
+
+data.p3 <- data.frame(X = Xn, Y = fitted(p3))
+data.p3 <- data.p3[order(data.p3$X), ]
+
+# p = 30 --------------------------------------------------------------------
+seno <- sin(2 * pi * Xn) ; coss <- cos(2 * pi * Xn)
+
+XLM <- cbind(seno, coss)
+
+for (i in 2:30){
+  
+  seno <- sin(2 * pi * i * Xn) ; coss <- cos(2 * pi * i * Xn)
+  
+  XLM <- cbind(XLM, cbind(seno, coss))}
+
+p30 <- lm(Y ~ XLM)
+
+data.p30 <- data.frame(X = Xn, Y = fitted(p30))
+data.p30 <- data.p30[order(data.p30$X), ]
+
+xyplot(Y ~ Xn, data1
+       , type = c("p", "g")
+       , pch = 16
+       , xlab = "PIB per capita normalizado"
+       , ylab = "Expectativa de vida"
+       , key = list(corner = c(.8, .2)
+                    , text = list(c("p = 1", "p = 3", "p = 30"))
+                    , lines = list(lwd = 2, col = 1:3))) +
+  as.layer(xyplot(data.p1$Y ~ data.p1$X, col = 1, type = "l", lwd = 2)) +
+  as.layer(xyplot(data.p3$Y ~ data.p3$X, col = 2, type = "l", lwd = 2)) +
+  as.layer(xyplot(data.p30$Y ~ data.p30$X, col = 3, type = "l", lwd = 2))
+# </code r> ================================================================= #
+@
+
+A curva que parece ser mais razoável é a para um \(p = 3\). A curva para
+\(p = 1\) é muito suave, apresentando um comportamento um tanto ingênuo. Já a
+curva para \(p = 30\) apresenta um \textit{overfitting}, correndo muito atrás
+dos dados. \\
+
+Em comparação com os polinômios, esses ajustes apresentam uma menor
+variabilidade nas regiões de maior incerteza, i.e., nas regiões com menos
+observações, assumindo comportamentos mais constantes e menos suscetíveis as
+poucas observações existentes. \\
+
+\textbf{e) Plote o gráfico de valores preditos vs ajustados para \(p = 1\),
+           \(p = p_{esc}\) e \(p = 30\) (não se esqueça de usar o
+           \textit{leave-one-out} para calcular os valores preditos! Caso
+           contrário você terá problemas de overfitting novamente). Qual \(p\)
+           parece ser mais razoável?}
+
+\horrule{.5pt}
+
+<<fig.width=10, fig.height=4>>=
+# <code r> ================================================================== #
+# p = 1 ---------------------------------------------------------------------
+pred.p1 <- 0
+
+for (i in 1:length(Xn)){
+  
+  Xn.fit <- Xn[-i]
+  Xn.pred <- Xn[i]
+  
+  Y.fit <- Y[-i]
+  Y.pred <- Y[i]
+  
+  seno <- sin(2 * pi * Xn.fit) ; coss <- cos(2 * pi * Xn.fit)
+  XLM <- data.frame(seno, coss)
+  
+  p1.cv <- lm(Y.fit ~ seno + coss, XLM)
+  
+  seno <- sin(2 * pi * Xn.pred) ; coss <- cos(2 * pi * Xn.pred)
+  XLM.pred <- data.frame(seno, coss)
+  
+  pred.p1[i] <- predict(p1.cv, XLM.pred)}
+
+# p = 3 ---------------------------------------------------------------------
+pred.p3 <- 0
+
+for (i in 1:length(Xn)){
+
+  Xn.fit <- Xn[-i]
+  Xn.pred <- Xn[i]
+  
+  Y.fit <- Y[-i]
+  Y.pred <- Y[i]
+  
+  seno <- sin(2 * pi * 1 *Xn.fit) ; coss <- cos(2 * pi * 1 * Xn.fit)
+  seno.coss <- cbind(seno, coss)
+  
+  for (j in 2:3){
+    
+    seno <- sin(2 * pi * j * Xn.fit) ; coss <- cos(2 * pi * j * Xn.fit)
+    seno.coss <- cbind(seno.coss, seno, coss)}
+  
+  XLM <- data.frame(seno.coss) ; names(XLM) <- as.character(1:6)
+  
+  p3.cv <- lm(Y.fit ~ ., XLM)
+  
+  seno <- sin(2 * pi * 1 * Xn.pred) ; coss <- cos(2 * pi * 1 * Xn.pred)
+  seno.coss <- cbind(seno, coss)
+  
+  for (j in 2:3){
+    
+    seno <- sin(2 * pi * j * Xn.pred) ; coss <- cos(2 * pi * j * Xn.pred)
+    seno.coss <- cbind(seno.coss, seno, coss)}
+  
+  XLM.pred <- data.frame(seno.coss) ; names(XLM.pred) <- as.character(1:6)
+  
+  pred.p3[i] <- predict(p3.cv, XLM.pred)}
+
+# p = 30 --------------------------------------------------------------------
+pred.p30 <- 0
+
+for (i in 1:length(Xn)){
+
+  Xn.fit <- Xn[-i]
+  Xn.pred <- Xn[i]
+  
+  Y.fit <- Y[-i]
+  Y.pred <- Y[i]
+  
+  seno <- sin(2 * pi * 1 * Xn.fit) ; coss <- cos(2 * pi * 1 * Xn.fit)
+  seno.coss <- cbind(seno, coss)
+  
+  for (j in 2:30){
+    
+    seno <- sin(2 * pi * j * Xn.fit) ; coss <- cos(2 * pi * j * Xn.fit)
+    seno.coss <- cbind(seno.coss, seno, coss)}
+
+  XLM <- data.frame(seno.coss) ; names(XLM) <- as.character(1:60)
+  
+  p30.cv <- lm(Y.fit ~ ., XLM)
+  
+  seno <- sin(2 * pi * 1 * Xn.pred) ; coss <- cos(2 * pi * 1 * Xn.pred)
+  seno.coss <- cbind(seno, coss)
+  
+  for (j in 2:30){
+    seno <- sin(2 * pi * j * Xn.pred) ; coss <- cos(2 * pi * j * Xn.pred)
+    seno.coss <- cbind(seno.coss, seno, coss)}
+  
+  XLM.pred <- data.frame(seno.coss) ; names(XLM.pred) <- as.character(1:60)
+  
+  pred.p30[i] <- predict(p30.cv, XLM.pred)}
+
+print(xyplot(pred.p1 ~ fitted(p1)
+             , type = c("p", "g")
+             , pch = 16
+             , xlab = "Ajustados"
+             , ylab = "Preditos"
+             , main = "p = 1"
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(0, 1, col = 2, lwd = 2)})
+      , position = c(0, 0, 1/3, 1)
+      , more = TRUE)
+
+print(xyplot(pred.p3 ~ fitted(p3)
+             , type = c("p", "g")
+             , pch = 16
+             , xlab = "Ajustados"
+             , ylab = "Preditos"
+             , main = "p = 3"
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(0, 1, col = 2, lwd = 2)})
+      , position = c(1/3, 0, 2/3, 1)
+      , more = TRUE)
+
+print(xyplot(pred.p30 ~ fitted(p30)
+             , type = c("p", "g")
+             , pch = 16
+             , xlab = "Ajustados"
+             , ylab = "Preditos"
+             , main = "p = 30"
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(0, 1, col = 2, lwd = 2)})
+      , position = c(2/3, 0, 1, 1))
+# </code r> ================================================================= #
+@
+
+Tanto o \(p = 1\) quanto o \(p = 3\) se apresentam razoáveis, entretanto, para
+\(p = 3\) as observações mais extremas tiveram predições não muito boas. Para
+\(p = 30\) duas observações resultaram em predições extremamentes divergentes.
+\\
+
+Feitas tais observações, o \(p\) que parece ser mais razoável é o \(p = 3\). \\
+
+\textbf{f) Quais vantagens e desvantagens de se usar validação cruzada do tipo
+           \textit{leave-one-out} vs o \textit{data-splitting}?}
+
+\horrule{.5pt}
+
+A validação cruzada do tipo \textit{leave-one-out} é de maior custo
+computacional, já que consiste na retirada sistemática de cada observação da
+base de dados de treino, se tornando inviável no contexto de conjuntos de dados
+muito grandes ou de recursos de processamento limitados. \\
+
+Contudo, ela se mostra mais vantajosa do que a validação cruzada do tipo
+\textit{data-splitting} (dividir um conjunto de dados em base de treino, teste
+e de validação) por possibilitar a avaliação do impacto de cada observação. \\
+
+\textbf{g) Ajuste a regressão Lasso (Frequentista e Bayesiana) e discuta os
+           resultados encontrados.}
+
+\horrule{.5pt}
+
+<<fig.width=10>>=
+# <code r> ================================================================== #
+# Lasso Frequentista --------------------------------------------------------
+library(glmnet)
+
+set.seed(22)
+
+Xn.train <- Xn[1:150] ; Y.train <- Y[1:150]
+
+Xn.test <- Xn[151:211] ; Y.test <- Y[151:211]
+
+seno <- sin(2 * pi * Xn.train) ; coss <- cos(2 * pi * Xn.train)
+XLM.train <- cbind(seno, coss)
+
+for (i in 2:30){
+  
+  seno <- sin(2 * pi * i * Xn.train) ; coss <- cos(2 * pi * i * Xn.train)
+  XLM.train <- cbind(XLM.train, cbind(seno, coss))}
+
+seno <- sin(2 * pi * Xn.test) ; coss <- cos(2 * pi * Xn.test)
+XLM.test <- cbind(seno, coss)
+
+for (i in 2:30){
+  
+  seno <- sin(2 * pi * i * Xn.test) ; coss <- cos(2 * pi * i * Xn.test)
+  XLM.test <- cbind(XLM.test, cbind(seno, coss))}
+
+lasso <- glmnet(cbind(1, XLM.train), Y.train, alpha = 1)
+
+cv <- cv.glmnet(cbind(1, XLM.train), Y.train, alpha = 1)
+
+print(xyplot(cv$cvm ~ cv$lambda
+             , xlab = expression(lambda)
+             , ylab = expression(R(g[lambda]))
+             , type = c("p", "g")
+             , pch = 16
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(v = cv$lambda.min, col = 2, lwd = 2)
+               panel.text(
+                 1.5, 57.5, labels = expression(lambda[min]~"= 0.549"))})
+      , position = c(0, 0, .5, 1)
+      , more = TRUE)
+
+cv <- cv.glmnet(cbind(1, XLM.train), Y.train
+                , alpha = 1, lambda = seq(1, .001, length.out = 1000))
+
+print(xyplot(cv$cvm ~ cv$lambda
+             , xlab = expression(lambda)
+             , ylab = expression(R(g[lambda]))
+             , type = c("p", "g")
+             , pch = 16
+             , panel = function(...){
+               panel.xyplot(...)
+               panel.abline(v = cv$lambda.min, col = 2, lwd = 2)
+               panel.text(.8, 55, labels = expression(lambda[min]~"= 0.549"))})
+      , position = c(.5, 0, 1, 1))
+# </code r> ================================================================= #
+@
+
+<<fig.width=10>>=
+# <code r> ================================================================== #
+par(mfrow = c(1, 2))
+
+plot(cv, las = 1, xlab = expression(log(lambda)), ylab = "MSE")
+
+plot(lasso, xvar = "lambda"
+     , las = 1, xlab = expression(log(lambda)), ylab = "Coeficientes")
+
+abline(v = log(cv$lambda.min), lwd = 2)
+# </code r> ================================================================= #
+@
+
+<<>>=
+# <code r> ================================================================== #
+i <- 0
+
+for (i in 1:length(coef(lasso)[ , 26])){ # lambda mais próximo do obtido via cv
+  
+  if (coef(lasso)[i, 26] != 0){
+    
+    if (i == 1){
+      
+      cat("Intercepto =", coef(lasso)[i, 26], '\n')}
+    
+    else {
+      
+      cat("Beta[",i - 1,"] =", coef(lasso)[i, 26], '\n')}}}
+# </code r> ================================================================= #
+@
+
+<<fig.height=3.75>>=
+# <code r> ================================================================== #
+pred.lasso <- predict(lasso, s = cv$lambda.min, newx = cbind(1, XLM.test))
+
+xyplot(pred.lasso ~ Y.test
+       , pch = 16
+       , type = c("p", "g")
+       , xlab = "Valores observados (base de teste)"
+       , ylab = "Valores preditos"
+       , panel = function(...){
+         panel.xyplot(...)
+         panel.abline(0, 1, col = 2, lwd = 2)})
+
+mean( (pred.lasso - Y.test)**2 )
+# </code r> ================================================================= #
+@
+
+<<eval=FALSE>>=
+# <code r> ================================================================== #
+# Lasso Bayesiana -----------------------------------------------------------
+library(rbugs)
+
+M <- length(Y.train)
+
+X <- XLM.train
+X <- cbind(rep(1, M), X)
+
+P <- ncol(X)
+
+Y <- Y.train
+
+N <- M
+
+model.file <- file.path("model.txt")
+
+data <- list ("N", "Y", "X", "P")
+
+inits <- list(list(tau = 1, beta = rep(0, P), lambda = 1))
+
+parameters <- c("tau", "beta", "sigma2", "sigma", "lambda")
+
+model <- rbugs(data, inits, parameters, model.file
+               , n.chains = 1
+               ,  n.iter = 20000
+               , n.burnin = 5000
+               , n.thin = 10
+               , bugs =
+                 "C:/Program Files (x86)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
+               , bugsWorkingDir = "BUGS/")
+# </code r> ================================================================= #
+@
+
+<<echo=FALSE, results='asis'>>=
+# <code r> ================================================================== #
+bugs <- read.table(paste0(path, "table-bugs.txt"), header = TRUE)
+
+colnames(bugs) <- c(
+  "Coef", "Média", "SD", "Erro-MC", "IC 2.5%", "Mediana", "IC 97.5%", "Inicial", "Amostra")
+
+library(xtable)
+
+print(xtable(bugs[1:11, ])
+      , include.rownames = FALSE
+      , booktabs = TRUE
+      , table.placement = "H")
+
+print(xtable(bugs[12:54, ])
+      , include.rownames = FALSE
+      , booktabs = TRUE
+      , table.placement = "H")
+
+print(xtable(bugs[55:63, ])
+      , include.rownames = FALSE
+      , booktabs = TRUE
+      , table.placement = "H")
+# </code r> ================================================================= #
+@
+
+\begin{center}
+
+ \vspace{3cm}
+ \includegraphics*[height = 10cm, width = 16.5cm]{iBagens/betas1.png}
+ 
+\end{center}
+
+\begin{center}
+
+ \includegraphics*[height = 10cm, width = 16.5cm]{iBagens/betas2.png}
+
+\end{center}
+
+<<fig.height=4>>=
+# <code r> ================================================================== #
+lambda.iter <- read.table(paste0(path, "lambda-iter.txt"), header = TRUE)
+
+xyplot(Lambda ~ Ite, lambda.iter
+       , type = c("l", "g")
+       , xlab = "Iteração"
+       , ylab = expression(lambda))
+# </code r> ================================================================= #
+@
+
+<<fig.width=10>>=
+# <code r> ================================================================== #
+par(mfrow = c(1, 2))
+
+plot(density(lambda.iter$Lambda)
+     , las = 1
+     , xlab = expression(lambda)
+     , ylab = "Densidade"
+     , main = "Densidade")
+
+plot(density(lambda.iter[250:15000, "Lambda"])
+     , las = 1
+     , xlab = expression(lambda)
+     , ylab = "Densidade"
+     , main = "Zoom na área de maior densidade")
+# </code r> ================================================================= #
+@
+
+\textit{Análise dos resultados}
+
+\begin{itemize}
+ 
+ \item \(\lambda\): As diferentes abordagens resultaram em \(\lambda\)'s muito
+                    próximos;
+ 
+ \item \(\beta 's\): Pela abordagem Bayesiana, com exceção do intercepto os
+                     intervalos de credibilidade de todos os \(\beta 's\)
+                     comtemplaram o zero, contudo, cabe ressaltar que estes não
+                     foram intervalos do tipo HPD. Logo, a princípio não
+                     podemos dizer que esses coeficientes não foram
+                     significativos, mas por uma análise dos gráficos os
+                     \(\beta 's\) 1 (intercepto), 3, 4, 5, 10, 27, 35, 36, 44,
+                     60 e 61 (onze \(\beta 's\)) podem ser considerados como
+                     significativos, já que possuem áreas com grande densidade
+                     fora do ponto zero. Já na abordagem frequentista,
+                     dezesseis coeficientes não foram zerados, i.e., foram
+                     significativos. A saber: \(\beta\) 3, 5, 7, 9, 11, 13, 15,
+                     17, 19, 21, 27, 35, 37, 44, 53 e 61. Os coeficientes que
+                     coincidiram foram os \(\beta 's\) 3, 5, 27, 35, 44 e 61
+                     (seis coeficientes).
+
+\end{itemize}
+
 \section*{Exercício II}
 \addcontentsline{toc}{section}{Exercício II}
 
+\horrule{1pt} \\
+
+\textbf{Neste exercício você irá implementar algumas técnicas vistas em aula
+        para o banco de dados das faces. O objetivo é conseguir criar uma
+        função que consiga predizer para onde uma pessoa está olhando com base
+        em uma foto. Iremos aplicar KNN para esses dados, assim como uma
+        regressão linear. Como não é possível usar o método dos mínimos
+        quadrados quando o número de covariáveis é maior que o número de
+        observações, para esta segunda etapa iremos usar o lasso.} \\
+
+\textbf{a) Leia o banco \textit{dadosFacesAltaResolucao.txt}. A primeira coluna
+           deste banco contém a variável que indica a direção para a qual o
+           indivíduo na imagem está olhando. As outras covariáveis contém os
+           pixels relativos a essa imagem, que possui dimensão 64 por 64.
+           Utilizando os comandos fornecidos, plot cinco imagens deste banco.
+           \vspace{.5em} \\
+           Divida o conjunto fornecido em treinamento (aproximadamente 60\% das
+           observações), validação (aproximadamente 20\% das observações) e
+           teste (aproximadamente 20\% das observações). Utilizaremos o 
+           conjunto de treinamento e validação para ajustar os modelos. O
+           conjunto de teste será utilizado para testar sua performanece}
+
+\horrule{.5pt}
+
+<<fig.width=10, fig.height=14.5>>=
+# <code r> ================================================================== #
+data2 <- read.table(paste0(path, "dadosFacesAltaResolucao.txt"), header = TRUE)
+
+data2_train <- data2[c(1:420), ] # 420/698
+
+data2_val <- data2[c(421:559), ]
+
+data2_test <- data2[c(560:698), ] # 560/698
+
+library(jpeg)
+
+count <- 1
+
+M <- matrix(data = NA
+            , nrow = 64
+            , ncol = 64)
+
+for (i in 1:64){
+  
+  for (j in 1:64){
+    
+    M[i, j] <- data2[1, 1 + count]
+    
+    count <- count + 1}}
+
+par(mfrow = c(3, 2))
+
+image(t(M)
+      , las = 1
+      , col = grey.colors(1000
+                          , start = 0
+                          , end = 1))
+
+count <- 1
+
+M <- matrix(data = NA
+            , nrow = 64
+            , ncol = 64)
+
+for (i in 1:64){
+  
+  for (j in 1:64){
+    
+    M[i, j] <- data2[which.min(data2$y), 1 + count]
+    
+    count <- count + 1}}
+
+image(t(M)
+      , las = 1
+      , col = grey.colors(1000
+                          , start = 0
+                          , end = 1))
+
+# subset(data2, y > -1 & y < 1)$y
+
+# row.names(data2[data2[ , "y"] == -0.39797, ])
+
+count <- 1
+
+M <- matrix(data = NA
+            , nrow = 64
+            , ncol = 64)
+
+for (i in 1:64){
+  
+  for (j in 1:64){
+    
+    # as.numeric(row.names(data2[data2[ , "y"] == -0.39797, ]))
+    
+    M[i, j] <- data2[509, 1 + count]
+    
+    count <- count + 1}}
+
+image(t(M)
+      , las = 1
+      , col = grey.colors(1000
+                          , start = 0
+                          , end = 1))
+
+count <- 1
+
+M <- matrix(data = NA
+            , nrow = 64
+            , ncol = 64)
+
+for (i in 1:64){
+  
+  for (j in 1:64){
+    
+    M[i, j] <- data2[which.max(data2$y), 1 + count]
+    
+    count <- count + 1}}
+
+image(t(M)
+      , las = 1
+      , col = grey.colors(1000
+                          , start = 0
+                          , end = 1))
+
+count <- 1
+
+M <- matrix(data = NA
+            , nrow = 64
+            , ncol = 64)
+
+for (i in 1:64){
+  
+  for (j in 1:64){
+    
+    M[i, j] <- data2[698, 1 + count]
+    
+    count <- count + 1}}
+
+image(t(M)
+      , las = 1
+      , col = grey.colors(1000
+                          , start = 0, end = 1))
+# </code r> ================================================================= #
+@
+
+\textbf{b) Qual o número de observações? Qual o número de covariáveis? O que
+           representa cada covariável?}
+
+\horrule{.5pt} \\
+
+São \Sexpr{nrow(data2)} observações (\Sexpr{nrow(data2_train)} para treino,
+\Sexpr{nrow(data2_val)} para validação e \Sexpr{nrow(data2_test)} para teste) e
+\Sexpr{ncol(data2[ , -1])} covariáveis, sendo que cada covariável representa a
+cor relativa ao pixel de sua posição na matriz da imagem. \\
+
+\textbf{c) Para cada observação do conjunto de teste, calcule o estimador da
+           função de regressão \(r()\) dado pelo método dos \(k\) vizinhos mais
+           próximos com \(k = 5\). Você pode usar as funções vistas em aula.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+library(FNN)
+
+knn.reg(data2_train[ , -1], data2_test[ , -1], data2_train[ , 1], k = 5)$pred
+# </code r> ================================================================= #
+@
+
+\textbf{d) Utilize validação cruzada (\textit{data splitting}) para escolher o
+           melhor \(k\). Plote \(k\) vs Risco estimado.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+k <- c(1:20)
+
+mse <- 0
+
+for (i in 1:20){
+  
+  y_hat <-
+    knn.reg(data2_train[ , -1], data2_val[ , -1], data2_train[ , 1], k = i)
+
+  mse[i] <- sum(data2_val[, 1] - y_hat$pred) ** 2}
+
+xyplot(mse ~ k
+       , type = c("l", "g")
+       , ylab = "Risco estimado"
+       , lwd = 2
+       , panel = function(...){
+         panel.xyplot(...)
+         panel.abline(v = which.min(mse), col = 2, lwd = 2)
+         panel.text(14, 3500, labels = paste("k =", which.min(mse)), col = 2)})
+# </code r> ================================================================= #
+@
+
+\textbf{e) Utilize o conjunto de teste, estime o risco do KNN para o melhor
+           \(k\). Plote os valores preditos vs os valores observados para o
+           conjunto de teste. Inclua a reta identidade.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+model <-
+  knn.reg(data2_train[ , -1], data2_test[ , -1], data2_train[ , 1], k = 12)
+
+mean( (model$pred - data2_test[ , 1]) ** 2 )
+
+xyplot(model$pred ~ data2_test[ , 1]
+       , type = c("p", "g")
+       , pch = 16
+       , xlab = "Observado"
+       , ylab = "Predito"
+       , panel = function(...){
+         panel.xyplot(...)
+         panel.abline(0, 1, col = 2, lwd = 2)})
+# </code r> ================================================================= #
+@
+
+\textbf{f) Ajuste uma regressão linear para os dados usando o conjunto de
+           treinamento mais o de validação via lasso (lembre-se que a função
+           que ajusta o lasso no R já faz validação cruzada automaticamente: ao
+           contrário do KNN, neste caso não é necessário separar os dados em              treinamento e validação). Qual o lambda escolhido? Plote lambda vs
+           Risco estimado.}
+
+\horrule{.5pt}
+
+<<fig.width=10>>=
+# <code r> ================================================================== #
+data2_trainval <- data2[1:559, ]
+
+set.seed(93)
+
+lasso <- glmnet(
+  as.matrix(data2_trainval[ , -1]), as.matrix(data2_trainval[ , 1])
+  , alpha = 1)
+
+cv <- cv.glmnet(
+  as.matrix(data2_trainval[ , -1]), as.matrix(data2_trainval[ , 1])
+  , alpha = 1)
+
+print(
+  xyplot(cv$cvm ~ cv$lambda
+         , xlab = expression(lambda)
+         , ylab = expression(R(g[lambda]))
+         , type = c("p", "g")
+         , pch = 16
+         , panel = function(...){
+           panel.xyplot(...)
+           panel.abline(v = cv$lambda.min
+                        , col = 2
+                        , lwd = 2)
+           panel.text(6, 750
+                      , labels = expression(lambda[min]~"= 0.343"))})
+  , position = c(0, 0, .5, 1)
+  , more = TRUE)
+
+cv <- cv.glmnet(
+  as.matrix(data2_trainval[ , -1]),  as.matrix(data2_trainval[ , 1])
+  , alpha = 1
+  , lambda = seq(1, .001, length.out = 1000))
+
+print(
+  xyplot(cv$cvm ~ cv$lambda
+         , xlab = expression(lambda)
+         , ylab = expression(R(g[lambda]))
+         , type = c("p", "g")
+         , pch = 16
+         , panel = function(...){
+           panel.xyplot(...)
+           panel.abline(v = cv$lambda.min
+                        , col = 2
+                        , lwd = 2)
+           panel.text(.2, 37.5
+                      , labels = expression(lambda[min]~"= 0.05"))})
+  , position = c(.5, 0, 1, 1))
+# </code r> ================================================================= #
+@
+
+<<>>=
+# <code r> ================================================================== #
+plot(cv, las = 1, xlab = expression(log(lambda)), ylab = "MSE")
+# </code r> ================================================================= #
+@
+
+\textbf{g) Utilizando o conjunto de teste, estime o risco do lasso para o 
+           melhor lambda. Plote os valores preditos vs os valores observados
+           para o conjunto de teste. Inclua a reta identidade.}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+pred <- predict(lasso, s = cv$lambda.min, newx = as.matrix(data2_test[ , -1]))
+
+mean( (pred - data2_test[ , 1]) ** 2 )
+
+xyplot(pred ~ data2_test[ , 1]
+       , type = c("p", "g")
+       , pch = 16
+       , xlab = "Observado"
+       , ylab = "Predito"
+       , panel = function(...){
+         panel.xyplot(...)
+         panel.abline(0, 1, col = 2, lwd = 2)})
+# </code r> ================================================================= #
+@
+
+\textbf{h) Quantos coeficientes foram estimados como sendo zero?}
+
+\horrule{.5pt}
+
+<<>>=
+# <code r> ================================================================== #
+coef <- coefficients(lasso, s = cv$lambda.min)
+
+count <- 0
+
+for (i in 1:ncol(data2)){
+  
+  if (coef[i] == 0) count <- count + 1}
+
+count
+# </code r> ================================================================= #
+@
+
+<<>>=
+# <code r> ================================================================== #
+ncol(data2) - count
+# </code r> ================================================================= #
+@
+
+<<>>=
+# <code r> ================================================================== #
+length(coef@x)
+# </code r> ================================================================= #
+@
+
+\textbf{i) Qual modelo teve melhores resultados: regressão linear via lasso ou
+           KNN?}
+
+\horrule{.5pt} \\
+
+Ambos apresentaram resultados muito similares, com uma ligeira vantagem para o
+KNN de \(k\) = 12, pois apresenta um risco estimado menor. A análise dos gráficos dos valores preditos vs valores ajustados evidencia um erro menor nos
+valores extremos para o KNN, o que pode justificar a vantagem deste modelo.
+
+\vspace{\fill}
 \horrule{1pt} \\
 
 \end{document}

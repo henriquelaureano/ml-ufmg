@@ -1,0 +1,1409 @@
+\documentclass[12pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0, 0, 0}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.502,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.651,0.522,0}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{1,0.502,0}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.733,0.475,0.467}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.502,0.502,0.753}{\textbf{#1}}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0.502,0.753}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0.267,0.4}{#1}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[brazilian, brazil]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[top = 2.5cm, left = 2.5cm, right = 2.5cm, bottom = 2.5cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage[normalem]{ulem}
+\usepackage{breqn}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\setlength\parindent{0pt}
+\newcommand{\eqnb}{\begin{equation}}
+\newcommand{\eqne}{\end{equation}}
+\newcommand{\eqnbs}{\begin{equation*}}
+\newcommand{\eqnes}{\end{equation*}}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+\title{  
+ \normalfont \normalsize 
+ \textsc{est171 - Aprendizado de Máquina} \\
+ Departamento de Estatística \\
+ Universidade Federal de Minas Gerais \\ [25pt]
+ \horrule{.5pt} \\ [.4cm]
+ \huge Lista  1 \\
+ \horrule{2pt} \\[ .5cm]}
+ 
+\author{Henrique Aparecido Laureano \and Arthur Tarso Rego}
+\date{\normalsize Setembro de 2016}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\vspace{\fill}
+
+\tableofcontents
+
+\horrule{1pt} \\
+
+\newpage
+
+
+
+\section*{Exercício I}
+\addcontentsline{toc}{section}{Exercício I}
+
+\horrule{1pt} \\
+
+\textbf{Os dados \texttt{worldDevelopmentIndicators.csv} contém os dados do PIB
+        per capita (\(X\)) e a expectativa de vida (\(Y\)) de diversos países.
+        O objetivo é criar preditores de \(Y\) com base em \(X\). Em aula vimos
+        como isso pode ser feito através de polinômios. Aqui, faremos isso via
+        expansões de Fourier.}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{path} \hlkwb{<-} \hlstr{"C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/"}
+
+\hlstd{data1} \hlkwb{<-} \hlkwd{read.csv}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"worldDevelopmentIndicators.csv"}\hlstd{))}
+
+\hlkwd{summary}\hlstd{(data1)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+            CountryName  LifeExpectancy   GDPercapita    
+ Afghanistan      :  1   Min.   :45.33   Min.   :   251  
+ Albania          :  1   1st Qu.:64.06   1st Qu.:  1682  
+ Algeria          :  1   Median :72.49   Median :  5786  
+ Angola           :  1   Mean   :70.30   Mean   : 14150  
+ AntiguaandBarbuda:  1   3rd Qu.:76.75   3rd Qu.: 16863  
+ ArabWorld        :  1   Max.   :83.48   Max.   :103858  
+ (Other)          :205                                   
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{a) Normalize a covariável de modo que \(x \in (0, 1)\). Para isso,
+           faça \(x = (x - x_{{\rm min}}) / (x_{{\rm max}} - x_{{\rm min}})\),
+           em que \(x_{{\rm min}}\) e \(x_{{\rm max}}\) são os valores mínimos
+           e máximos de \(x\) segundo a amostra usada.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{names}\hlstd{(data1)[}\hlnum{3}\hlstd{]} \hlkwb{<-} \hlstr{"X"}
+
+\hlstd{data1}\hlopt{$}\hlstd{Xn} \hlkwb{<-} \hlkwd{with}\hlstd{(data1, ( X} \hlopt{-} \hlkwd{min}\hlstd{(X) )} \hlopt{/} \hlstd{(} \hlkwd{max}\hlstd{(X)} \hlopt{-} \hlkwd{min}\hlstd{(X) ) )}
+
+\hlkwd{summary}\hlstd{(data1}\hlopt{$}\hlstd{Xn)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.01381 0.05342 0.13420 0.16030 1.00000 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{b) Usando o método dos mínimos quadrados e a validação cruzada do tipo
+           \textit{leave-one-out}, estime o erro quadrático médio das
+           regressões}
+\begin{align*}
+ g(x) & = \\
+      & \hat{\beta}_{0}
+        + \hat{\beta}_{1}{\rm sin}(2\pi x) + \hat{\beta}_{2}{\rm cos}(2\pi x)
+        + \hat{\beta}_{3}{\rm sin}(2\pi 2x) + \hat{\beta}_{4}{\rm cos}(2\pi 2x)
+        \\
+      & \hskip .4cm
+        + ...
+        + \hat{\beta}_{2p-1}{\rm sin}(2\pi px)
+        + \hat{\beta}_{2p}{\rm cos}(2\pi px)
+\end{align*}
+
+\textbf{para \(p = 1, ..., 30\).}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(cvTools)}
+
+\hlstd{Y} \hlkwb{<-} \hlstd{data1[ ,} \hlnum{2}\hlstd{] ; X} \hlkwb{<-} \hlstd{data1[ ,} \hlnum{3}\hlstd{] ; Xn} \hlkwb{<-} \hlstd{data1[ ,} \hlnum{4}\hlstd{]}
+
+\hlstd{mse} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(p} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{30}\hlstd{)\{}
+
+  \hlkwa{if} \hlstd{(p} \hlopt{==} \hlnum{1}\hlstd{)\{}
+
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn)}
+
+    \hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+    \hlstd{fit} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y} \hlopt{~} \hlstd{XLM)}
+
+    \hlstd{rmse} \hlkwb{<-} \hlkwd{repCV}\hlstd{(fit,} \hlkwc{K} \hlstd{=} \hlkwd{length}\hlstd{(Xn)) ; mse[p]} \hlkwb{<-} \hlstd{rmse}\hlopt{$}\hlstd{cv[[}\hlnum{1}\hlstd{]]} \hlopt{**} \hlnum{2}\hlstd{\}}
+
+  \hlkwa{if} \hlstd{(p} \hlopt{>} \hlnum{1}\hlstd{)\{}
+
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn)}
+
+    \hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+    \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlstd{p)\{}
+
+      \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn)}
+
+      \hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(XLM,} \hlkwd{cbind}\hlstd{(seno, coss))\}}
+
+    \hlstd{fit} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y} \hlopt{~} \hlstd{XLM)}
+
+    \hlstd{rmse} \hlkwb{<-} \hlkwd{repCV}\hlstd{(fit,} \hlkwc{K} \hlstd{=} \hlkwd{length}\hlstd{(Xn)) ; mse[p]} \hlkwb{<-} \hlstd{rmse}\hlopt{$}\hlstd{cv[[}\hlnum{1}\hlstd{]]} \hlopt{**} \hlnum{2}\hlstd{\}\}}
+
+\hlstd{mse}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+ [1] 5.128216e+01 4.610982e+01 4.294558e+01 4.449556e+01 4.308229e+01
+ [6] 5.476830e+01 4.468426e+02 1.496953e+02 2.398555e+03 5.781719e+03
+[11] 3.577478e+02 5.836964e+06 3.178243e+07 2.382372e+09 1.304575e+11
+[16] 2.054332e+12 5.665055e+13 1.752371e+12 4.845864e+16 5.272471e+17
+[21] 1.690995e+19 1.001170e+20 3.224824e+23 8.684489e+23 5.385807e+25
+[26] 2.250809e+27 1.336144e+28 2.174205e+29 2.905797e+29 1.059644e+29
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{c) Plote o gráfico do risco estimado vs \(p\). Qual o valor de \(p\)
+           escolhido? Denotaremos ele por \(p_{esc}\)}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(latticeExtra)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(mse} \hlopt{~} \hlnum{1}\hlopt{:}\hlnum{30}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"l"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"p"}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Risco ( R(g) )"}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{=} \hlkwd{which.min}\hlstd{(mse),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more}\hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(mse[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]} \hlopt{~} \hlnum{1}\hlopt{:}\hlnum{5}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"l"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"p"}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Risco ( R(g) )"}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{=} \hlkwd{which.min}\hlstd{(mse),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+               \hlkwd{panel.abline}\hlstd{(}\hlkwc{h} \hlstd{=} \hlkwd{min}\hlstd{(mse),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{2}\hlstd{)}
+               \hlkwd{panel.text}\hlstd{(}\hlnum{4.25}\hlstd{,} \hlnum{51}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{paste}\hlstd{(}
+                 \hlstr{"Para p = 3,\textbackslash{}nR(g) ="}\hlstd{,} \hlkwd{round}\hlstd{(}\hlkwd{min}\hlstd{(mse),} \hlnum{3}\hlstd{)))\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-4-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{d) Plote as curvas ajustadas para \(p = 1\), \(p = p_{esc}\) e
+           \(p = 30\) sob o gráfico de dispersão de \(X\) por \(Y\). Qual curva
+           parece mais razoável? Use um grid de valores entre 0 e 1 para isso.
+           Como estes ajustes se comparam com o visto em aula via polinômios?
+           Discuta.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlcom{# p = 1 ---------------------------------------------------------------------}
+\hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn)}
+
+\hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+\hlstd{p1} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y} \hlopt{~} \hlstd{XLM)}
+
+\hlstd{data.p1} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{X} \hlstd{= Xn,} \hlkwc{Y} \hlstd{=} \hlkwd{fitted}\hlstd{(p1))}
+\hlstd{data.p1} \hlkwb{<-} \hlstd{data.p1[}\hlkwd{order}\hlstd{(data.p1}\hlopt{$}\hlstd{X), ]}
+
+\hlcom{# p = 3 ---------------------------------------------------------------------}
+\hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn)}
+
+\hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{3}\hlstd{)\{}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn)}
+
+  \hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(XLM,} \hlkwd{cbind}\hlstd{(seno,coss))\}}
+
+\hlstd{p3} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y} \hlopt{~} \hlstd{XLM)}
+
+\hlstd{data.p3} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{X} \hlstd{= Xn,} \hlkwc{Y} \hlstd{=} \hlkwd{fitted}\hlstd{(p3))}
+\hlstd{data.p3} \hlkwb{<-} \hlstd{data.p3[}\hlkwd{order}\hlstd{(data.p3}\hlopt{$}\hlstd{X), ]}
+
+\hlcom{# p = 30 --------------------------------------------------------------------}
+\hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn)}
+
+\hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{30}\hlstd{)\{}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn)}
+
+  \hlstd{XLM} \hlkwb{<-} \hlkwd{cbind}\hlstd{(XLM,} \hlkwd{cbind}\hlstd{(seno, coss))\}}
+
+\hlstd{p30} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y} \hlopt{~} \hlstd{XLM)}
+
+\hlstd{data.p30} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{X} \hlstd{= Xn,} \hlkwc{Y} \hlstd{=} \hlkwd{fitted}\hlstd{(p30))}
+\hlstd{data.p30} \hlkwb{<-} \hlstd{data.p30[}\hlkwd{order}\hlstd{(data.p30}\hlopt{$}\hlstd{X), ]}
+
+\hlkwd{xyplot}\hlstd{(Y} \hlopt{~} \hlstd{Xn, data1}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"PIB per capita normalizado"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Expectativa de vida"}
+       \hlstd{,} \hlkwc{key} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{corner} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.8}\hlstd{,} \hlnum{.2}\hlstd{)}
+                    \hlstd{,} \hlkwc{text} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"p = 1"}\hlstd{,} \hlstr{"p = 3"}\hlstd{,} \hlstr{"p = 30"}\hlstd{))}
+                    \hlstd{,} \hlkwc{lines} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{3}\hlstd{)))} \hlopt{+}
+  \hlkwd{as.layer}\hlstd{(}\hlkwd{xyplot}\hlstd{(data.p1}\hlopt{$}\hlstd{Y} \hlopt{~} \hlstd{data.p1}\hlopt{$}\hlstd{X,} \hlkwc{col} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{))} \hlopt{+}
+  \hlkwd{as.layer}\hlstd{(}\hlkwd{xyplot}\hlstd{(data.p3}\hlopt{$}\hlstd{Y} \hlopt{~} \hlstd{data.p3}\hlopt{$}\hlstd{X,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{))} \hlopt{+}
+  \hlkwd{as.layer}\hlstd{(}\hlkwd{xyplot}\hlstd{(data.p30}\hlopt{$}\hlstd{Y} \hlopt{~} \hlstd{data.p30}\hlopt{$}\hlstd{X,} \hlkwc{col} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-5-1} 
+
+}
+
+
+
+\end{knitrout}
+
+A curva que parece ser mais razoável é a para um \(p = 3\). A curva para
+\(p = 1\) é muito suave, apresentando um comportamento um tanto ingênuo. Já a
+curva para \(p = 30\) apresenta um \textit{overfitting}, correndo muito atrás
+dos dados. \\
+
+Em comparação com os polinômios, esses ajustes apresentam uma menor
+variabilidade nas regiões de maior incerteza, i.e., nas regiões com menos
+observações, assumindo comportamentos mais constantes e menos suscetíveis as
+poucas observações existentes. \\
+
+\textbf{e) Plote o gráfico de valores preditos vs ajustados para \(p = 1\),
+           \(p = p_{esc}\) e \(p = 30\) (não se esqueça de usar o
+           \textit{leave-one-out} para calcular os valores preditos! Caso
+           contrário você terá problemas de overfitting novamente). Qual \(p\)
+           parece ser mais razoável?}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlcom{# p = 1 ---------------------------------------------------------------------}
+\hlstd{pred.p1} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(Xn))\{}
+
+  \hlstd{Xn.fit} \hlkwb{<-} \hlstd{Xn[}\hlopt{-}\hlstd{i]}
+  \hlstd{Xn.pred} \hlkwb{<-} \hlstd{Xn[i]}
+
+  \hlstd{Y.fit} \hlkwb{<-} \hlstd{Y[}\hlopt{-}\hlstd{i]}
+  \hlstd{Y.pred} \hlkwb{<-} \hlstd{Y[i]}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.fit) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.fit)}
+  \hlstd{XLM} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno, coss)}
+
+  \hlstd{p1.cv} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y.fit} \hlopt{~} \hlstd{seno} \hlopt{+} \hlstd{coss, XLM)}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.pred) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.pred)}
+  \hlstd{XLM.pred} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno, coss)}
+
+  \hlstd{pred.p1[i]} \hlkwb{<-} \hlkwd{predict}\hlstd{(p1.cv, XLM.pred)\}}
+
+\hlcom{# p = 3 ---------------------------------------------------------------------}
+\hlstd{pred.p3} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(Xn))\{}
+
+  \hlstd{Xn.fit} \hlkwb{<-} \hlstd{Xn[}\hlopt{-}\hlstd{i]}
+  \hlstd{Xn.pred} \hlkwb{<-} \hlstd{Xn[i]}
+
+  \hlstd{Y.fit} \hlkwb{<-} \hlstd{Y[}\hlopt{-}\hlstd{i]}
+  \hlstd{Y.pred} \hlkwb{<-} \hlstd{Y[i]}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*}\hlstd{Xn.fit) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.fit)}
+  \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{3}\hlstd{)\{}
+
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.fit) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.fit)}
+    \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno.coss, seno, coss)\}}
+
+  \hlstd{XLM} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno.coss) ;} \hlkwd{names}\hlstd{(XLM)} \hlkwb{<-} \hlkwd{as.character}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{)}
+
+  \hlstd{p3.cv} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y.fit} \hlopt{~} \hlstd{., XLM)}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.pred) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.pred)}
+  \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{3}\hlstd{)\{}
+
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.pred) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.pred)}
+    \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno.coss, seno, coss)\}}
+
+  \hlstd{XLM.pred} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno.coss) ;} \hlkwd{names}\hlstd{(XLM.pred)} \hlkwb{<-} \hlkwd{as.character}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{6}\hlstd{)}
+
+  \hlstd{pred.p3[i]} \hlkwb{<-} \hlkwd{predict}\hlstd{(p3.cv, XLM.pred)\}}
+
+\hlcom{# p = 30 --------------------------------------------------------------------}
+\hlstd{pred.p30} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(Xn))\{}
+
+  \hlstd{Xn.fit} \hlkwb{<-} \hlstd{Xn[}\hlopt{-}\hlstd{i]}
+  \hlstd{Xn.pred} \hlkwb{<-} \hlstd{Xn[i]}
+
+  \hlstd{Y.fit} \hlkwb{<-} \hlstd{Y[}\hlopt{-}\hlstd{i]}
+  \hlstd{Y.pred} \hlkwb{<-} \hlstd{Y[i]}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.fit) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.fit)}
+  \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{30}\hlstd{)\{}
+
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.fit) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.fit)}
+    \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno.coss, seno, coss)\}}
+
+  \hlstd{XLM} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno.coss) ;} \hlkwd{names}\hlstd{(XLM)} \hlkwb{<-} \hlkwd{as.character}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{60}\hlstd{)}
+
+  \hlstd{p30.cv} \hlkwb{<-} \hlkwd{lm}\hlstd{(Y.fit} \hlopt{~} \hlstd{., XLM)}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.pred) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlnum{1} \hlopt{*} \hlstd{Xn.pred)}
+  \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{30}\hlstd{)\{}
+    \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.pred) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{j} \hlopt{*} \hlstd{Xn.pred)}
+    \hlstd{seno.coss} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno.coss, seno, coss)\}}
+
+  \hlstd{XLM.pred} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seno.coss) ;} \hlkwd{names}\hlstd{(XLM.pred)} \hlkwb{<-} \hlkwd{as.character}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{60}\hlstd{)}
+
+  \hlstd{pred.p30[i]} \hlkwb{<-} \hlkwd{predict}\hlstd{(p30.cv, XLM.pred)\}}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(pred.p1} \hlopt{~} \hlkwd{fitted}\hlstd{(p1)}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Ajustados"}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Preditos"}
+             \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"p = 1"}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlopt{/}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(pred.p3} \hlopt{~} \hlkwd{fitted}\hlstd{(p3)}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Ajustados"}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Preditos"}
+             \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"p = 3"}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{/}\hlnum{3}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{2}\hlopt{/}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(pred.p30} \hlopt{~} \hlkwd{fitted}\hlstd{(p30)}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Ajustados"}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Preditos"}
+             \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"p = 30"}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlopt{/}\hlnum{3}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-6-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Tanto o \(p = 1\) quanto o \(p = 3\) se apresentam razoáveis, entretanto, para
+\(p = 3\) as observações mais extremas tiveram predições não muito boas. Para
+\(p = 30\) duas observações resultaram em predições extremamentes divergentes.
+\\
+
+Feitas tais observações, o \(p\) que parece ser mais razoável é o \(p = 3\). \\
+
+\textbf{f) Quais vantagens e desvantagens de se usar validação cruzada do tipo
+           \textit{leave-one-out} vs o \textit{data-splitting}?}
+
+\horrule{.5pt}
+
+A validação cruzada do tipo \textit{leave-one-out} é de maior custo
+computacional, já que consiste na retirada sistemática de cada observação da
+base de dados de treino, se tornando inviável no contexto de conjuntos de dados
+muito grandes ou de recursos de processamento limitados. \\
+
+Contudo, ela se mostra mais vantajosa do que a validação cruzada do tipo
+\textit{data-splitting} (dividir um conjunto de dados em base de treino, teste
+e de validação) por possibilitar a avaliação do impacto de cada observação. \\
+
+\textbf{g) Ajuste a regressão Lasso (Frequentista e Bayesiana) e discuta os
+           resultados encontrados.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlcom{# Lasso Frequentista --------------------------------------------------------}
+\hlkwd{library}\hlstd{(glmnet)}
+
+\hlkwd{set.seed}\hlstd{(}\hlnum{22}\hlstd{)}
+
+\hlstd{Xn.train} \hlkwb{<-} \hlstd{Xn[}\hlnum{1}\hlopt{:}\hlnum{150}\hlstd{] ; Y.train} \hlkwb{<-} \hlstd{Y[}\hlnum{1}\hlopt{:}\hlnum{150}\hlstd{]}
+
+\hlstd{Xn.test} \hlkwb{<-} \hlstd{Xn[}\hlnum{151}\hlopt{:}\hlnum{211}\hlstd{] ; Y.test} \hlkwb{<-} \hlstd{Y[}\hlnum{151}\hlopt{:}\hlnum{211}\hlstd{]}
+
+\hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.train) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.train)}
+\hlstd{XLM.train} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{30}\hlstd{)\{}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn.train) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn.train)}
+  \hlstd{XLM.train} \hlkwb{<-} \hlkwd{cbind}\hlstd{(XLM.train,} \hlkwd{cbind}\hlstd{(seno, coss))\}}
+
+\hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.test) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{Xn.test)}
+\hlstd{XLM.test} \hlkwb{<-} \hlkwd{cbind}\hlstd{(seno, coss)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{30}\hlstd{)\{}
+
+  \hlstd{seno} \hlkwb{<-} \hlkwd{sin}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn.test) ; coss} \hlkwb{<-} \hlkwd{cos}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{pi} \hlopt{*} \hlstd{i} \hlopt{*} \hlstd{Xn.test)}
+  \hlstd{XLM.test} \hlkwb{<-} \hlkwd{cbind}\hlstd{(XLM.test,} \hlkwd{cbind}\hlstd{(seno, coss))\}}
+
+\hlstd{lasso} \hlkwb{<-} \hlkwd{glmnet}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlnum{1}\hlstd{, XLM.train), Y.train,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlstd{cv} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlnum{1}\hlstd{, XLM.train), Y.train,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(cv}\hlopt{$}\hlstd{cvm} \hlopt{~} \hlstd{cv}\hlopt{$}\hlstd{lambda}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{R}\hlstd{(g[lambda]))}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+               \hlkwd{panel.text}\hlstd{(}
+                 \hlnum{1.5}\hlstd{,} \hlnum{57.5}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{expression}\hlstd{(lambda[min]}\hlopt{~}\hlstr{"= 0.549"}\hlstd{))\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{cv} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlnum{1}\hlstd{, XLM.train), Y.train}
+                \hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{.001}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{1000}\hlstd{))}
+
+\hlkwd{print}\hlstd{(}\hlkwd{xyplot}\hlstd{(cv}\hlopt{$}\hlstd{cvm} \hlopt{~} \hlstd{cv}\hlopt{$}\hlstd{lambda}
+             \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+             \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{R}\hlstd{(g[lambda]))}
+             \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+             \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+             \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+               \hlkwd{panel.xyplot}\hlstd{(...)}
+               \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+               \hlkwd{panel.text}\hlstd{(}\hlnum{.8}\hlstd{,} \hlnum{55}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{expression}\hlstd{(lambda[min]}\hlopt{~}\hlstr{"= 0.549"}\hlstd{))\})}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-7-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{))}
+
+\hlkwd{plot}\hlstd{(cv,} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{log}\hlstd{(lambda)),} \hlkwc{ylab} \hlstd{=} \hlstr{"MSE"}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(lasso,} \hlkwc{xvar} \hlstd{=} \hlstr{"lambda"}
+     \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{log}\hlstd{(lambda)),} \hlkwc{ylab} \hlstd{=} \hlstr{"Coeficientes"}\hlstd{)}
+
+\hlkwd{abline}\hlstd{(}\hlkwc{v} \hlstd{=} \hlkwd{log}\hlstd{(cv}\hlopt{$}\hlstd{lambda.min),} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-8-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{i} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{length}\hlstd{(}\hlkwd{coef}\hlstd{(lasso)[ ,} \hlnum{26}\hlstd{]))\{} \hlcom{# lambda mais próximo do obtido via cv}
+
+  \hlkwa{if} \hlstd{(}\hlkwd{coef}\hlstd{(lasso)[i,} \hlnum{26}\hlstd{]} \hlopt{!=} \hlnum{0}\hlstd{)\{}
+
+    \hlkwa{if} \hlstd{(i} \hlopt{==} \hlnum{1}\hlstd{)\{}
+
+      \hlkwd{cat}\hlstd{(}\hlstr{"Intercepto ="}\hlstd{,} \hlkwd{coef}\hlstd{(lasso)[i,} \hlnum{26}\hlstd{],} \hlstr{'\textbackslash{}n'}\hlstd{)\}}
+
+    \hlkwa{else} \hlstd{\{}
+
+      \hlkwd{cat}\hlstd{(}\hlstr{"Beta["}\hlstd{,i} \hlopt{-} \hlnum{1}\hlstd{,}\hlstr{"] ="}\hlstd{,} \hlkwd{coef}\hlstd{(lasso)[i,} \hlnum{26}\hlstd{],} \hlstr{'\textbackslash{}n'}\hlstd{)\}\}\}}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+Intercepto = 76.31641 
+Beta[ 3 ] = -4.678484 
+Beta[ 5 ] = -2.374822 
+Beta[ 7 ] = -0.2094418 
+Beta[ 9 ] = -1.518322 
+Beta[ 11 ] = -0.618371 
+Beta[ 13 ] = -0.3357034 
+Beta[ 15 ] = -0.08094573 
+Beta[ 17 ] = -0.646376 
+Beta[ 19 ] = -0.6773292 
+Beta[ 21 ] = -0.3690756 
+Beta[ 27 ] = -0.9395936 
+Beta[ 35 ] = -1.406763 
+Beta[ 37 ] = -0.3527128 
+Beta[ 44 ] = -0.2144417 
+Beta[ 53 ] = -0.2706215 
+Beta[ 61 ] = -0.5515885 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{pred.lasso} \hlkwb{<-} \hlkwd{predict}\hlstd{(lasso,} \hlkwc{s} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min,} \hlkwc{newx} \hlstd{=} \hlkwd{cbind}\hlstd{(}\hlnum{1}\hlstd{, XLM.test))}
+
+\hlkwd{xyplot}\hlstd{(pred.lasso} \hlopt{~} \hlstd{Y.test}
+       \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Valores observados (base de teste)"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Valores preditos"}
+       \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+         \hlkwd{panel.xyplot}\hlstd{(...)}
+         \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+
+\hlkwd{mean}\hlstd{( (pred.lasso} \hlopt{-} \hlstd{Y.test)}\hlopt{**}\hlnum{2} \hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 34.18578
+\end{verbatim}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-10-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlcom{# Lasso Bayesiana -----------------------------------------------------------}
+\hlkwd{library}\hlstd{(rbugs)}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{length}\hlstd{(Y.train)}
+
+\hlstd{X} \hlkwb{<-} \hlstd{XLM.train}
+\hlstd{X} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{, M), X)}
+
+\hlstd{P} \hlkwb{<-} \hlkwd{ncol}\hlstd{(X)}
+
+\hlstd{Y} \hlkwb{<-} \hlstd{Y.train}
+
+\hlstd{N} \hlkwb{<-} \hlstd{M}
+
+\hlstd{model.file} \hlkwb{<-} \hlkwd{file.path}\hlstd{(}\hlstr{"model.txt"}\hlstd{)}
+
+\hlstd{data} \hlkwb{<-} \hlkwd{list} \hlstd{(}\hlstr{"N"}\hlstd{,} \hlstr{"Y"}\hlstd{,} \hlstr{"X"}\hlstd{,} \hlstr{"P"}\hlstd{)}
+
+\hlstd{inits} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwd{list}\hlstd{(}\hlkwc{tau} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{beta} \hlstd{=} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{, P),} \hlkwc{lambda} \hlstd{=} \hlnum{1}\hlstd{))}
+
+\hlstd{parameters} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"tau"}\hlstd{,} \hlstr{"beta"}\hlstd{,} \hlstr{"sigma2"}\hlstd{,} \hlstr{"sigma"}\hlstd{,} \hlstr{"lambda"}\hlstd{)}
+
+\hlstd{model} \hlkwb{<-} \hlkwd{rbugs}\hlstd{(data, inits, parameters, model.file}
+               \hlstd{,} \hlkwc{n.chains} \hlstd{=} \hlnum{1}
+               \hlstd{,}  \hlkwc{n.iter} \hlstd{=} \hlnum{20000}
+               \hlstd{,} \hlkwc{n.burnin} \hlstd{=} \hlnum{5000}
+               \hlstd{,} \hlkwc{n.thin} \hlstd{=} \hlnum{10}
+               \hlstd{,} \hlkwc{bugs} \hlstd{=}
+                 \hlstr{"C:/Program Files (x86)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"}
+               \hlstd{,} \hlkwc{bugsWorkingDir} \hlstd{=} \hlstr{"BUGS/"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+% latex table generated in R 3.3.0 by xtable 1.8-2 package
+% Fri Sep 09 10:02:14 2016
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrrrr}
+  \toprule
+Coef & Média & SD & Erro-MC & IC 2.5\% & Mediana & IC 97.5\% & Inicial & Amostra \\ 
+  \midrule
+beta[1] & 74.09 & 9.40 & 0.82 & 69.53 & 75.28 & 79.70 &   1 & 15000 \\ 
+  beta[2] & 1.53 & 2.82 & 0.17 & -3.37 & 1.12 & 8.01 &   1 & 15000 \\ 
+  beta[3] & -2.41 & 2.49 & 0.12 & -7.63 & -2.25 & 1.90 &   1 & 15000 \\ 
+  beta[4] & -1.73 & 2.50 & 0.10 & -7.15 & -1.49 & 2.88 &   1 & 15000 \\ 
+  beta[5] & -1.41 & 2.16 & 0.08 & -6.05 & -1.16 & 2.52 &   1 & 15000 \\ 
+  beta[6] & 0.26 & 2.12 & 0.08 & -4.01 & 0.16 & 4.64 &   1 & 15000 \\ 
+  beta[7] & -0.37 & 2.06 & 0.06 & -4.63 & -0.24 & 3.79 &   1 & 15000 \\ 
+  beta[8] & -0.36 & 2.11 & 0.06 & -4.96 & -0.26 & 3.89 &   1 & 15000 \\ 
+  beta[9] & -1.15 & 2.09 & 0.07 & -5.70 & -0.94 & 2.69 &   1 & 15000 \\ 
+  beta[10] & -1.04 & 1.97 & 0.06 & -5.39 & -0.82 & 2.52 &   1 & 15000 \\ 
+  beta[11] & -0.20 & 2.21 & 0.08 & -4.86 & -0.11 & 4.24 &   1 & 15000 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+% latex table generated in R 3.3.0 by xtable 1.8-2 package
+% Fri Sep 09 10:02:14 2016
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrrrr}
+  \toprule
+Coef & Média & SD & Erro-MC & IC 2.5\% & Mediana & IC 97.5\% & Inicial & Amostra \\ 
+  \midrule
+beta[12] & -1.03 & 2.27 & 0.08 & -6.10 & -0.77 & 3.14 &   1 & 15000 \\ 
+  beta[13] & -0.05 & 1.94 & 0.06 & -4.16 & -0.00 & 3.86 &   1 & 15000 \\ 
+  beta[14] & -0.38 & 1.93 & 0.06 & -4.38 & -0.28 & 3.54 &   1 & 15000 \\ 
+  beta[15] & -0.83 & 2.27 & 0.09 & -5.62 & -0.65 & 3.53 &   1 & 15000 \\ 
+  beta[16] & 0.19 & 2.23 & 0.08 & -4.37 & 0.12 & 4.86 &   1 & 15000 \\ 
+  beta[17] & -0.78 & 1.91 & 0.06 & -4.82 & -0.63 & 2.92 &   1 & 15000 \\ 
+  beta[18] & -0.75 & 1.98 & 0.05 & -4.98 & -0.57 & 3.03 &   1 & 15000 \\ 
+  beta[19] & -0.64 & 2.02 & 0.07 & -4.92 & -0.49 & 3.38 &   1 & 15000 \\ 
+  beta[20] & -0.56 & 2.14 & 0.07 & -4.96 & -0.45 & 3.90 &   1 & 15000 \\ 
+  beta[21] & -1.09 & 1.89 & 0.06 & -5.17 & -0.90 & 2.39 &   1 & 15000 \\ 
+  beta[22] & -0.39 & 2.16 & 0.06 & -5.04 & -0.25 & 3.87 &   1 & 15000 \\ 
+  beta[23] & -0.03 & 1.75 & 0.05 & -3.79 & -0.02 & 3.56 &   1 & 15000 \\ 
+  beta[24] & 0.10 & 1.96 & 0.06 & -3.88 & 0.06 & 4.23 &   1 & 15000 \\ 
+  beta[25] & -0.09 & 1.85 & 0.05 & -4.00 & -0.05 & 3.67 &   1 & 15000 \\ 
+  beta[26] & -0.03 & 2.09 & 0.06 & -4.35 & -0.00 & 4.26 &   1 & 15000 \\ 
+  beta[27] & -1.48 & 1.96 & 0.07 & -5.71 & -1.29 & 2.02 &   1 & 15000 \\ 
+  beta[28] & -0.59 & 2.08 & 0.07 & -5.00 & -0.47 & 3.60 &   1 & 15000 \\ 
+  beta[29] & -0.71 & 1.85 & 0.06 & -4.77 & -0.54 & 2.78 &   1 & 15000 \\ 
+  beta[30] & 0.08 & 1.82 & 0.06 & -3.73 & 0.05 & 3.87 &   1 & 15000 \\ 
+  beta[31] & -0.14 & 1.94 & 0.06 & -4.17 & -0.09 & 3.78 &   1 & 15000 \\ 
+  beta[32] & 1.11 & 2.09 & 0.07 & -2.74 & 0.91 & 5.71 &   1 & 15000 \\ 
+  beta[33] & -0.16 & 1.81 & 0.06 & -3.96 & -0.09 & 3.40 &   1 & 15000 \\ 
+  beta[34] & 0.24 & 1.77 & 0.05 & -3.35 & 0.18 & 3.94 &   1 & 15000 \\ 
+  beta[35] & -1.20 & 2.13 & 0.07 & -5.79 & -0.95 & 2.77 &   1 & 15000 \\ 
+  beta[36] & -1.63 & 2.20 & 0.09 & -6.46 & -1.39 & 2.20 &   1 & 15000 \\ 
+  beta[37] & -0.86 & 2.11 & 0.07 & -5.72 & -0.62 & 2.95 &   1 & 15000 \\ 
+  beta[38] & 0.55 & 1.91 & 0.07 & -3.08 & 0.39 & 4.83 &   1 & 15000 \\ 
+  beta[39] & -0.34 & 2.15 & 0.08 & -4.93 & -0.23 & 3.98 &   1 & 15000 \\ 
+  beta[40] & 0.84 & 2.00 & 0.07 & -2.85 & 0.64 & 5.27 &   1 & 15000 \\ 
+  beta[41] & 0.45 & 1.92 & 0.06 & -3.33 & 0.31 & 4.59 &   1 & 15000 \\ 
+  beta[42] & 0.32 & 1.87 & 0.05 & -3.41 & 0.23 & 4.34 &   1 & 15000 \\ 
+  beta[43] & -0.88 & 1.95 & 0.06 & -4.96 & -0.70 & 2.80 &   1 & 15000 \\ 
+  beta[44] & -1.18 & 1.99 & 0.07 & -5.48 & -0.99 & 2.46 &   1 & 15000 \\ 
+  beta[45] & 0.06 & 1.89 & 0.07 & -3.85 & 0.04 & 4.00 &   1 & 15000 \\ 
+  beta[46] & 0.27 & 1.93 & 0.06 & -3.67 & 0.19 & 4.37 &   1 & 15000 \\ 
+  beta[47] & 0.38 & 1.88 & 0.05 & -3.38 & 0.27 & 4.39 &   1 & 15000 \\ 
+  beta[48] & 0.59 & 2.13 & 0.07 & -3.35 & 0.38 & 5.29 &   1 & 15000 \\ 
+  beta[49] & 0.09 & 1.70 & 0.05 & -3.38 & 0.06 & 3.61 &   1 & 15000 \\ 
+  beta[50] & 0.84 & 1.90 & 0.05 & -2.78 & 0.69 & 4.88 &   1 & 15000 \\ 
+  beta[51] & -0.53 & 2.07 & 0.07 & -5.02 & -0.37 & 3.51 &   1 & 15000 \\ 
+  beta[52] & -1.02 & 2.09 & 0.07 & -5.54 & -0.77 & 2.75 &   1 & 15000 \\ 
+  beta[53] & -0.02 & 1.80 & 0.05 & -3.62 & -0.03 & 3.69 &   1 & 15000 \\ 
+  beta[54] & 0.14 & 1.81 & 0.05 & -3.41 & 0.04 & 4.16 &   1 & 15000 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+% latex table generated in R 3.3.0 by xtable 1.8-2 package
+% Fri Sep 09 10:02:14 2016
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrrrr}
+  \toprule
+Coef & Média & SD & Erro-MC & IC 2.5\% & Mediana & IC 97.5\% & Inicial & Amostra \\ 
+  \midrule
+beta[55] & 0.20 & 1.86 & 0.05 & -3.60 & 0.14 & 4.14 &   1 & 15000 \\ 
+  beta[56] & 0.53 & 1.84 & 0.05 & -3.06 & 0.37 & 4.46 &   1 & 15000 \\ 
+  beta[57] & -0.02 & 1.75 & 0.05 & -3.49 & -0.03 & 3.71 &   1 & 15000 \\ 
+  beta[58] & -0.21 & 1.60 & 0.05 & -3.62 & -0.12 & 2.89 &   1 & 15000 \\ 
+  beta[59] & 0.34 & 1.80 & 0.04 & -3.19 & 0.23 & 4.15 &   1 & 15000 \\ 
+  beta[60] & -0.69 & 1.44 & 0.03 & -3.77 & -0.57 & 2.05 &   1 & 15000 \\ 
+  beta[61] & -0.87 & 1.46 & 0.04 & -3.94 & -0.77 & 1.88 &   1 & 15000 \\ 
+  lambda & 0.58 & 2.26 & 0.17 & 0.25 & 0.36 & 0.51 &   1 & 15000 \\ 
+  sigma2 & 113.20 & 622.70 & 54.03 & 28.89 & 36.81 & 50.51 &   1 & 15000 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{center}
+
+ \vspace{3cm}
+ \includegraphics*[height = 10cm, width = 16.5cm]{iBagens/betas1.png}
+ 
+\end{center}
+
+\begin{center}
+
+ \includegraphics*[height = 10cm, width = 16.5cm]{iBagens/betas2.png}
+
+\end{center}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{lambda.iter} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"lambda-iter.txt"}\hlstd{),} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{xyplot}\hlstd{(Lambda} \hlopt{~} \hlstd{Ite, lambda.iter}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"l"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Iteração"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-13-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{))}
+
+\hlkwd{plot}\hlstd{(}\hlkwd{density}\hlstd{(lambda.iter}\hlopt{$}\hlstd{Lambda)}
+     \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+     \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+     \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Densidade"}
+     \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Densidade"}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(}\hlkwd{density}\hlstd{(lambda.iter[}\hlnum{250}\hlopt{:}\hlnum{15000}\hlstd{,} \hlstr{"Lambda"}\hlstd{])}
+     \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+     \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+     \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Densidade"}
+     \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Zoom na área de maior densidade"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-14-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textit{Análise dos resultados}
+
+\begin{itemize}
+ 
+ \item \(\lambda\): As diferentes abordagens resultaram em \(\lambda\)'s muito
+                    próximos;
+ 
+ \item \(\beta 's\): Pela abordagem Bayesiana, com exceção do intercepto os
+                     intervalos de credibilidade de todos os \(\beta 's\)
+                     comtemplaram o zero, contudo, cabe ressaltar que estes não
+                     foram intervalos do tipo HPD. Logo, a princípio não
+                     podemos dizer que esses coeficientes não foram
+                     significativos, mas por uma análise dos gráficos os
+                     \(\beta 's\) 1 (intercepto), 3, 4, 5, 10, 27, 35, 36, 44,
+                     60 e 61 (onze \(\beta 's\)) podem ser considerados como
+                     significativos, já que possuem áreas com grande densidade
+                     fora do ponto zero. Já na abordagem frequentista,
+                     dezesseis coeficientes não foram zerados, i.e., foram
+                     significativos. A saber: \(\beta\) 3, 5, 7, 9, 11, 13, 15,
+                     17, 19, 21, 27, 35, 37, 44, 53 e 61. Os coeficientes que
+                     coincidiram foram os \(\beta 's\) 3, 5, 27, 35, 44 e 61
+                     (seis coeficientes).
+
+\end{itemize}
+
+\section*{Exercício II}
+\addcontentsline{toc}{section}{Exercício II}
+
+\horrule{1pt} \\
+
+\textbf{Neste exercício você irá implementar algumas técnicas vistas em aula
+        para o banco de dados das faces. O objetivo é conseguir criar uma
+        função que consiga predizer para onde uma pessoa está olhando com base
+        em uma foto. Iremos aplicar KNN para esses dados, assim como uma
+        regressão linear. Como não é possível usar o método dos mínimos
+        quadrados quando o número de covariáveis é maior que o número de
+        observações, para esta segunda etapa iremos usar o lasso.} \\
+
+\textbf{a) Leia o banco \textit{dadosFacesAltaResolucao.txt}. A primeira coluna
+           deste banco contém a variável que indica a direção para a qual o
+           indivíduo na imagem está olhando. As outras covariáveis contém os
+           pixels relativos a essa imagem, que possui dimensão 64 por 64.
+           Utilizando os comandos fornecidos, plot cinco imagens deste banco.
+           \vspace{.5em} \\
+           Divida o conjunto fornecido em treinamento (aproximadamente 60\% das
+           observações), validação (aproximadamente 20\% das observações) e
+           teste (aproximadamente 20\% das observações). Utilizaremos o 
+           conjunto de treinamento e validação para ajustar os modelos. O
+           conjunto de teste será utilizado para testar sua performanece}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{data2} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"dadosFacesAltaResolucao.txt"}\hlstd{),} \hlkwc{header} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{data2_train} \hlkwb{<-} \hlstd{data2[}\hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{420}\hlstd{), ]} \hlcom{# 420/698}
+
+\hlstd{data2_val} \hlkwb{<-} \hlstd{data2[}\hlkwd{c}\hlstd{(}\hlnum{421}\hlopt{:}\hlnum{559}\hlstd{), ]}
+
+\hlstd{data2_test} \hlkwb{<-} \hlstd{data2[}\hlkwd{c}\hlstd{(}\hlnum{560}\hlopt{:}\hlnum{698}\hlstd{), ]} \hlcom{# 560/698}
+
+\hlkwd{library}\hlstd{(jpeg)}
+
+\hlstd{count} \hlkwb{<-} \hlnum{1}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{data} \hlstd{=} \hlnum{NA}
+            \hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{64}
+            \hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{64}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+    \hlstd{M[i, j]} \hlkwb{<-} \hlstd{data2[}\hlnum{1}\hlstd{,} \hlnum{1} \hlopt{+} \hlstd{count]}
+
+    \hlstd{count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{2}\hlstd{))}
+
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(M)}
+      \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+      \hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{grey.colors}\hlstd{(}\hlnum{1000}
+                          \hlstd{,} \hlkwc{start} \hlstd{=} \hlnum{0}
+                          \hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{1}\hlstd{))}
+
+\hlstd{count} \hlkwb{<-} \hlnum{1}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{data} \hlstd{=} \hlnum{NA}
+            \hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{64}
+            \hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{64}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+    \hlstd{M[i, j]} \hlkwb{<-} \hlstd{data2[}\hlkwd{which.min}\hlstd{(data2}\hlopt{$}\hlstd{y),} \hlnum{1} \hlopt{+} \hlstd{count]}
+
+    \hlstd{count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(M)}
+      \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+      \hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{grey.colors}\hlstd{(}\hlnum{1000}
+                          \hlstd{,} \hlkwc{start} \hlstd{=} \hlnum{0}
+                          \hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{1}\hlstd{))}
+
+\hlcom{# subset(data2, y > -1 & y < 1)$y}
+
+\hlcom{# row.names(data2[data2[ , "y"] == -0.39797, ])}
+
+\hlstd{count} \hlkwb{<-} \hlnum{1}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{data} \hlstd{=} \hlnum{NA}
+            \hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{64}
+            \hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{64}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+    \hlcom{# as.numeric(row.names(data2[data2[ , "y"] == -0.39797, ]))}
+
+    \hlstd{M[i, j]} \hlkwb{<-} \hlstd{data2[}\hlnum{509}\hlstd{,} \hlnum{1} \hlopt{+} \hlstd{count]}
+
+    \hlstd{count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(M)}
+      \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+      \hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{grey.colors}\hlstd{(}\hlnum{1000}
+                          \hlstd{,} \hlkwc{start} \hlstd{=} \hlnum{0}
+                          \hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{1}\hlstd{))}
+
+\hlstd{count} \hlkwb{<-} \hlnum{1}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{data} \hlstd{=} \hlnum{NA}
+            \hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{64}
+            \hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{64}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+    \hlstd{M[i, j]} \hlkwb{<-} \hlstd{data2[}\hlkwd{which.max}\hlstd{(data2}\hlopt{$}\hlstd{y),} \hlnum{1} \hlopt{+} \hlstd{count]}
+
+    \hlstd{count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(M)}
+      \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+      \hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{grey.colors}\hlstd{(}\hlnum{1000}
+                          \hlstd{,} \hlkwc{start} \hlstd{=} \hlnum{0}
+                          \hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{1}\hlstd{))}
+
+\hlstd{count} \hlkwb{<-} \hlnum{1}
+
+\hlstd{M} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlkwc{data} \hlstd{=} \hlnum{NA}
+            \hlstd{,} \hlkwc{nrow} \hlstd{=} \hlnum{64}
+            \hlstd{,} \hlkwc{ncol} \hlstd{=} \hlnum{64}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+  \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{64}\hlstd{)\{}
+
+    \hlstd{M[i, j]} \hlkwb{<-} \hlstd{data2[}\hlnum{698}\hlstd{,} \hlnum{1} \hlopt{+} \hlstd{count]}
+
+    \hlstd{count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+
+\hlkwd{image}\hlstd{(}\hlkwd{t}\hlstd{(M)}
+      \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+      \hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{grey.colors}\hlstd{(}\hlnum{1000}
+                          \hlstd{,} \hlkwc{start} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{end} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-15-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{b) Qual o número de observações? Qual o número de covariáveis? O que
+           representa cada covariável?}
+
+\horrule{.5pt} \\
+
+São 698 observações (420 para treino,
+139 para validação e 139 para teste) e
+4096 covariáveis, sendo que cada covariável representa a
+cor relativa ao pixel de sua posição na matriz da imagem. \\
+
+\textbf{c) Para cada observação do conjunto de teste, calcule o estimador da
+           função de regressão \(r()\) dado pelo método dos \(k\) vizinhos mais
+           próximos com \(k = 5\). Você pode usar as funções vistas em aula.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(FNN)}
+
+\hlkwd{knn.reg}\hlstd{(data2_train[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_test[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_train[ ,} \hlnum{1}\hlstd{],} \hlkwc{k} \hlstd{=} \hlnum{5}\hlstd{)}\hlopt{$}\hlstd{pred}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+  [1]  40.216000 -55.630400   9.459480 -26.780400  40.124800 -25.987400
+  [7]  51.570000  69.595400 -46.860600 -55.244000 -21.676600 -35.421000
+ [13] -63.752800  19.355800 -23.430000 -43.976600 -57.588400 -62.818800
+ [19]  24.252200  16.298200  39.245200  68.085200  69.033600  32.896000
+ [25] -47.912600 -42.637000  -1.590720  -1.366120  68.360600  -4.031388
+ [31] -52.349200 -45.595000  63.367200  38.112000   4.744300 -42.796000
+ [37] -68.313400  16.426400 -48.117200  60.517200 -69.483600  -7.989568
+ [43] -43.888000   2.595472  43.399800 -43.728000 -52.848600 -15.506600
+ [49] -34.000200  47.782200 -12.222280 -49.676800 -18.575800   7.388460
+ [55]  37.182600  43.800800 -61.060600  49.560600   5.751260  16.426400
+ [61]  62.915200 -55.244000 -17.795800 -15.453740 -47.257200   8.657500
+ [67]  43.835000 -25.085800 -26.408800   7.825360 -47.776800   7.769960
+ [73] -54.263600  40.641400   4.717560  26.608600  66.645400  32.804200
+ [79]  10.616260 -20.130000  61.746600 -15.391540 -15.395940   6.475200
+ [85]  61.714800  15.525600 -69.684800  32.583600 -39.760800 -33.132000
+ [91] -67.595200 -20.069400 -23.994600 -14.607840  32.536400 -40.402400
+ [97]  47.840600 -43.965000 -43.965000 -23.642000 -56.255600  37.877000
+[103] -48.358800  64.943400 -52.750800 -11.205040 -19.598940  24.640800
+[109]  25.518600   1.613820  56.504600 -67.595200  37.346600  62.946600
+[115] -17.113800  61.067400  15.735000  40.875200 -67.964200 -18.000760
+[121] -47.485000 -13.582240  -4.881200  -0.695040  -0.375960 -20.104000
+[127]  51.564400 -12.022120  -4.653000 -34.831800  26.630800 -12.138300
+[133]  16.057000  48.789600 -37.076800 -46.214400  61.248800  31.045600
+[139] -13.399960
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{d) Utilize validação cruzada (\textit{data splitting}) para escolher o
+           melhor \(k\). Plote \(k\) vs Risco estimado.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{k} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{20}\hlstd{)}
+
+\hlstd{mse} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{20}\hlstd{)\{}
+
+  \hlstd{y_hat} \hlkwb{<-}
+    \hlkwd{knn.reg}\hlstd{(data2_train[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_val[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_train[ ,} \hlnum{1}\hlstd{],} \hlkwc{k} \hlstd{= i)}
+
+  \hlstd{mse[i]} \hlkwb{<-} \hlkwd{sum}\hlstd{(data2_val[,} \hlnum{1}\hlstd{]} \hlopt{-} \hlstd{y_hat}\hlopt{$}\hlstd{pred)} \hlopt{**} \hlnum{2}\hlstd{\}}
+
+\hlkwd{xyplot}\hlstd{(mse} \hlopt{~} \hlstd{k}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"l"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Risco estimado"}
+       \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}
+       \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+         \hlkwd{panel.xyplot}\hlstd{(...)}
+         \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{=} \hlkwd{which.min}\hlstd{(mse),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+         \hlkwd{panel.text}\hlstd{(}\hlnum{14}\hlstd{,} \hlnum{3500}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{paste}\hlstd{(}\hlstr{"k ="}\hlstd{,} \hlkwd{which.min}\hlstd{(mse)),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{)\})}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-17-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{e) Utilize o conjunto de teste, estime o risco do KNN para o melhor
+           \(k\). Plote os valores preditos vs os valores observados para o
+           conjunto de teste. Inclua a reta identidade.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{model} \hlkwb{<-}
+  \hlkwd{knn.reg}\hlstd{(data2_train[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_test[ ,} \hlopt{-}\hlnum{1}\hlstd{], data2_train[ ,} \hlnum{1}\hlstd{],} \hlkwc{k} \hlstd{=} \hlnum{12}\hlstd{)}
+
+\hlkwd{mean}\hlstd{( (model}\hlopt{$}\hlstd{pred} \hlopt{-} \hlstd{data2_test[ ,} \hlnum{1}\hlstd{])} \hlopt{**} \hlnum{2} \hlstd{)}
+
+\hlkwd{xyplot}\hlstd{(model}\hlopt{$}\hlstd{pred} \hlopt{~} \hlstd{data2_test[ ,} \hlnum{1}\hlstd{]}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Observado"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Predito"}
+       \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+         \hlkwd{panel.xyplot}\hlstd{(...)}
+         \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 26.21408
+\end{verbatim}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-18-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{f) Ajuste uma regressão linear para os dados usando o conjunto de
+           treinamento mais o de validação via lasso (lembre-se que a função
+           que ajusta o lasso no R já faz validação cruzada automaticamente: ao
+           contrário do KNN, neste caso não é necessário separar os dados em              treinamento e validação). Qual o lambda escolhido? Plote lambda vs
+           Risco estimado.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{data2_trainval} \hlkwb{<-} \hlstd{data2[}\hlnum{1}\hlopt{:}\hlnum{559}\hlstd{, ]}
+
+\hlkwd{set.seed}\hlstd{(}\hlnum{93}\hlstd{)}
+
+\hlstd{lasso} \hlkwb{<-} \hlkwd{glmnet}\hlstd{(}
+  \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlopt{-}\hlnum{1}\hlstd{]),} \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlnum{1}\hlstd{])}
+  \hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlstd{cv} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(}
+  \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlopt{-}\hlnum{1}\hlstd{]),} \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlnum{1}\hlstd{])}
+  \hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}
+  \hlkwd{xyplot}\hlstd{(cv}\hlopt{$}\hlstd{cvm} \hlopt{~} \hlstd{cv}\hlopt{$}\hlstd{lambda}
+         \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+         \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{R}\hlstd{(g[lambda]))}
+         \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+         \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+         \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+           \hlkwd{panel.xyplot}\hlstd{(...)}
+           \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min}
+                        \hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}
+                        \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+           \hlkwd{panel.text}\hlstd{(}\hlnum{6}\hlstd{,} \hlnum{750}
+                      \hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{expression}\hlstd{(lambda[min]}\hlopt{~}\hlstr{"= 0.343"}\hlstd{))\})}
+  \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+  \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlstd{cv} \hlkwb{<-} \hlkwd{cv.glmnet}\hlstd{(}
+  \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlopt{-}\hlnum{1}\hlstd{]),}  \hlkwd{as.matrix}\hlstd{(data2_trainval[ ,} \hlnum{1}\hlstd{])}
+  \hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{lambda} \hlstd{=} \hlkwd{seq}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{.001}\hlstd{,} \hlkwc{length.out} \hlstd{=} \hlnum{1000}\hlstd{))}
+
+\hlkwd{print}\hlstd{(}
+  \hlkwd{xyplot}\hlstd{(cv}\hlopt{$}\hlstd{cvm} \hlopt{~} \hlstd{cv}\hlopt{$}\hlstd{lambda}
+         \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(lambda)}
+         \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{R}\hlstd{(g[lambda]))}
+         \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+         \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+         \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+           \hlkwd{panel.xyplot}\hlstd{(...)}
+           \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min}
+                        \hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}
+                        \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+           \hlkwd{panel.text}\hlstd{(}\hlnum{.2}\hlstd{,} \hlnum{37.5}
+                      \hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{expression}\hlstd{(lambda[min]}\hlopt{~}\hlstr{"= 0.05"}\hlstd{))\})}
+  \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-19-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(cv,} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlkwd{expression}\hlstd{(}\hlkwd{log}\hlstd{(lambda)),} \hlkwc{ylab} \hlstd{=} \hlstr{"MSE"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-20-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{g) Utilizando o conjunto de teste, estime o risco do lasso para o 
+           melhor lambda. Plote os valores preditos vs os valores observados
+           para o conjunto de teste. Inclua a reta identidade.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{pred} \hlkwb{<-} \hlkwd{predict}\hlstd{(lasso,} \hlkwc{s} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min,} \hlkwc{newx} \hlstd{=} \hlkwd{as.matrix}\hlstd{(data2_test[ ,} \hlopt{-}\hlnum{1}\hlstd{]))}
+
+\hlkwd{mean}\hlstd{( (pred} \hlopt{-} \hlstd{data2_test[ ,} \hlnum{1}\hlstd{])} \hlopt{**} \hlnum{2} \hlstd{)}
+
+\hlkwd{xyplot}\hlstd{(pred} \hlopt{~} \hlstd{data2_test[ ,} \hlnum{1}\hlstd{]}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Observado"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Predito"}
+       \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+         \hlkwd{panel.xyplot}\hlstd{(...)}
+         \hlkwd{panel.abline}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)\})}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 36.31676
+\end{verbatim}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-21-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{h) Quantos coeficientes foram estimados como sendo zero?}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{coef} \hlkwb{<-} \hlkwd{coefficients}\hlstd{(lasso,} \hlkwc{s} \hlstd{= cv}\hlopt{$}\hlstd{lambda.min)}
+
+\hlstd{count} \hlkwb{<-} \hlnum{0}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{ncol}\hlstd{(data2))\{}
+
+  \hlkwa{if} \hlstd{(coef[i]} \hlopt{==} \hlnum{0}\hlstd{) count} \hlkwb{<-} \hlstd{count} \hlopt{+} \hlnum{1}\hlstd{\}}
+
+\hlstd{count}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 3985
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{ncol}\hlstd{(data2)} \hlopt{-} \hlstd{count}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 112
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{length}\hlstd{(coef}\hlopt{@}\hlkwc{x}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 112
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{i) Qual modelo teve melhores resultados: regressão linear via lasso ou
+           KNN?}
+
+\horrule{.5pt} \\
+
+Ambos apresentaram resultados muito similares, com uma ligeira vantagem para o
+KNN de \(k\) = 12, pois apresenta um risco estimado menor. A análise dos gráficos dos valores preditos vs valores ajustados evidencia um erro menor nos
+valores extremos para o KNN, o que pode justificar a vantagem deste modelo.
+
+\vspace{\fill}
+\horrule{1pt} \\
+
+\end{document}

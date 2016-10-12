@@ -1,51 +1,4 @@
-\documentclass[12pt]{article}
-\usepackage[brazilian, brazil]{babel}
-\usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{amsmath}
-\usepackage{graphicx}
-\usepackage[top = 2.5cm, left = 2.5cm, right = 2.5cm, bottom = 2.5cm]{geometry}
-\usepackage{indentfirst}
-\usepackage{float}
-\usepackage{multicol}
-\usepackage[normalem]{ulem}
-\usepackage{breqn}
-\usepackage{amsfonts}
-\usepackage{amsthm}
-\usepackage{enumitem}
-\usepackage{booktabs}
-\setlength\parindent{0pt}
-\newcommand{\eqnb}{\begin{equation}}
-\newcommand{\eqne}{\end{equation}}
-\newcommand{\eqnbs}{\begin{equation*}}
-\newcommand{\eqnes}{\end{equation*}}
-\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
-
-\title{  
- \normalfont \normalsize 
- \textsc{est171 - Aprendizado de Máquina} \\
- Departamento de Estatística \\
- Universidade Federal de Minas Gerais \\ [25pt]
- \horrule{.5pt} \\ [.4cm]
- \huge Lista  2 \\
- \horrule{2pt} \\[ .5cm]}
- 
-\author{Henrique Aparecido Laureano \and Matheus Henrique Sales}
-\date{\normalsize Outubro de 2016}
-
-\begin{document}
-
-\maketitle
-
-\vspace{\fill}
-
-\tableofcontents
-
-\horrule{1pt} \\
-
-\newpage
-
-<<setup, include=FALSE>>=
+## ----setup, include=FALSE------------------------------------------------
 library(knitr)
 
 tema <- knit_theme$get("acid")
@@ -67,19 +20,8 @@ opts_chunk$set(size = 'small'
                , background = '#ffffff'
                , results = 'hold'
                , fig.show = 'hold')
-@
 
-\section*{Exercício I}
-\addcontentsline{toc}{section}{Exercício I}
-
-\horrule{1pt} \\
-
-\textbf{Baixe o conjunto de dados \texttt{titanic.txt}. Cada observação deste
-        banco é relativa a um passageiro do Titanic. As covariáveis indicam
-        características destes passageiros; a variável resposta indica se o
-        passageiro sobreviveu ou não ao naufrágio.}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 path <- "C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/list 2/"
 
@@ -87,14 +29,8 @@ data <- read.table(paste0(path, "titanic.txt"))
 
 summary(data)
 # </code r> ================================================================= #
-@
 
-\textbf{Seu objetivo é criar classificadores para predizer a variável resposta
-        com base nas covariáveis disponíveis. Para tanto, você deverá
-        implementar os seguintes classificadores, assim como estimar seus
-        riscos via conjunto de teste:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 test.psg <- sample(size = nrow(data) * .2, x = 0:nrow(data))
 
@@ -102,121 +38,53 @@ train <- data[-test.psg, ] # nrow(train): 1761
 
 test <- data[test.psg, ] # nrow(test): 440
 # </code r> ================================================================= #
-@
 
-\begin{itemize}
- \item \textbf{Regressão Logística. Mostre os coeficientes estimados.}
- \item \textbf{Regressão Linear. Mostre os coeficientes estimados.}
- \item \textbf{Naive Bayes.}
- \item \textbf{Análise Discriminante Linear.}
- \item \textbf{Análise Discriminante Quadrática.}
- \item \textbf{KNN. Para isso você precisará transformar as covariáveis 
-                    categóricas em numéricas. Você pode usar variáveis dummies.
-              }
-\end{itemize}
-
-\textbf{Responda ainda as seguintes perguntas:}
-
-\begin{itemize}
- \item \textbf{Qual o melhor classificador segundo o risco estimado? Discuta.}
- \item \textbf{Para os classificadores baseados em estimativas de
-               probabilidade, faça também as curvas ROC com o conjunto de
-               teste. Faça também a tabela de confusão quando o corte usado é
-               0.5 e também quando o corte é aquele que maximiza sensibilidade
-               mais especificidade. Comente.}
-\end{itemize}
-
-\subsection*{Regressão Logística}
-
-\horrule{.5pt}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 reg.log <- glm(Survived ~ ., train, family = binomial)
 # </code r> ================================================================= #
-@
 
-As características (covariáveis) são significativas?
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 anova(reg.log, test = "Chisq")
 # </code r> ================================================================= #
-@
 
-Com as características sendo adicionadas sequencialmente, todas são
-estatísticamente significativas. \\
-
-E quando incluímos a característica num modelo que contem as demais?
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 car::Anova(reg.log)
 # </code r> ================================================================= #
-@
 
-Ainda assim todas as caractetísticas são significativas. \\
-
-Coeficientes estimados:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 cbind(Estimates = coef(reg.log), confint.default(reg.log))
 # </code r> ================================================================= #
-@
 
-\textit{Odds-ratios}:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 exp(cbind(OR = coef(reg.log), confint.default(reg.log)))
 # </code r> ================================================================= #
-@
 
-\subsection*{Regressão Linear}
-
-\horrule{.5pt}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 reg.lin <- lm(as.numeric(Survived) ~ ., train)
 # </code r> ================================================================= #
-@
 
-As características são significativas?
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 anova(reg.lin)
 # </code r> ================================================================= #
-@
 
-Com as características sendo adicionadas sequencialmente, todas são
-estatísticamente significativas. \\
-
-E quando incluímos a característica num modelo que contem as demais?
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 car::Anova(reg.lin)
 # </code r> ================================================================= #
-@
 
-Ainda assim todas as caractetísticas são significativas. \\
-
-Coeficientes estimados:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 cbind(Estimates = coef(reg.lin), confint(reg.lin))
 # </code r> ================================================================= #
-@
 
-\subsection*{Naive Bayes}
-
-\horrule{.5pt}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 library(e1071)
 
@@ -224,13 +92,8 @@ nb <- naiveBayes(Survived ~ ., train)
 
 nb$tables
 # </code r> ================================================================= #
-@
 
-\subsection*{Análise Discriminante Linear}
-
-\horrule{.5pt}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 library(MASS)
 
@@ -238,25 +101,15 @@ dl <- lda(Survived ~ ., train)
 
 dl$scaling
 # </code r> ================================================================= #
-@
 
-\subsection*{Análise Discriminante Quadrática}
-
-\horrule{.5pt}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 dq <- qda(Survived ~ ., train)
 
 dq$scaling
 # </code r> ================================================================= #
-@
 
-\subsection*{KNN}
-
-\horrule{.5pt}
-
-<<fig.height=3.5>>=
+## ----fig.height=3.5------------------------------------------------------
 # <code r> ================================================================== #
 library(FNN)
 
@@ -288,80 +141,43 @@ xyplot(risco ~ 1:nrow(test.knn)
          panel.text(30, .295, labels = paste("k =", which.min(risco)), col = 2)
          })
 # </code r> ================================================================= #
-@
 
-\subsection*{Qual o melhor classificador segundo o risco estimado?}
-
-\horrule{.5pt}
-
-\subsubsection*{Regressão Logística:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 mean(
   test$Survived != ifelse(predict(reg.log, test, type = "response") < .5
                           , "No", "Yes"))
 # </code r> ================================================================= #
-@
 
-\subsubsection*{Regressão Linear:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 mean(test$Survived != ifelse(predict(reg.lin, test) < 1.5, "No", "Yes"))
 # </code r> ================================================================= #
-@
 
-\subsubsection*{Naive Bayes:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 mean(test$Survived != predict(nb, test))
 # </code r> ================================================================= #
-@
 
-\subsubsection*{Análise Discriminante Linear:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 mean(test$Survived != predict(dl, test)$class)
 # </code r> ================================================================= #
-@
 
-\subsubsection*{Análise Discriminante Quadrática:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 mean(test$Survived != predict(dq, test)$class)
 # </code r> ================================================================= #
-@
 
-\subsubsection*{KNN:}
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 knn <- knn.reg(
   train.knn[ , -4], test.knn[ , -4], train.knn[ , 4], k = which.min(risco))
 
 mean(test.knn$Survived != ifelse(knn$pred < 1.5, "No", "Yes"))
 # </code r> ================================================================= #
-@
 
-Com a Regressão Logística, Regressão Linear, Naive Bayes e Análise
-Discriminante Linear, o risco estimado é o mesmo, 0.2409091. \\
-
-Com o KNN o risco estimado é um pouco maior, 0.2431818. \\
-
-Com a Análise Discriminante Quadrática o maior risco foi estimado, 0.2477273.
-
-\subsection*{Para os classificadores baseados em estimativas de probabilidade,
-             faça também as curvas ROC com o conjunto de teste. Faça também a
-             tabela de confusão quando o corte usado é 0.5 e também quando o
-             corte é aquele que maximiza sensibilidade mais especificidade}
-
-\horrule{.5pt}
-
-<<results='hide', fig.width=10, fig.height=14>>=
+## ----results='hide', fig.width=10, fig.height=14-------------------------
 # <code r> ================================================================== #
 library(pROC)
 
@@ -421,122 +237,59 @@ plot.roc(
   , ylab = "Sensibilidade"
   , main = "KNN")
 # </code r> ================================================================= #
-@
 
-\large \textbf{Tabelas de confusão:} \normalsize \\
-
-\textbf{Regressão Logística:} \\
-
-Ponto de corte 0.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(predict(reg.log, test, type = "response") < .5
                             , "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-Ponto de corte 0.299:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(predict(reg.log, test, type = "response") < .299
                             , "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-\textbf{Regressão Linear:} \\
-
-Ponto de corte 1.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(predict(reg.lin, test) < 1.5, "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-Ponto de corte 1.309:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(predict(reg.lin, test) < 1.309, "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-\textbf{Naive Bayes:} \\
-
-Ponto de corte 1.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, predict(nb, test), dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-\textbf{Análise Discriminante Linear:} \\
-
-Ponto de corte 1.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, predict(dl, test)$class
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-\textbf{Análise Discriminante Quadrática:} \\
-
-Ponto de corte 1.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, predict(dq, test)$class
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-\textbf{KNN:} \\
-
-Ponto de corte 1.5:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(knn$pred < 1.5, "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-Ponto de corte 1.25:
-
-<<>>=
+## ------------------------------------------------------------------------
 # <code r> ================================================================== #
 table(test$Survived, ifelse(knn$pred < 1.25, "No", "Yes")
       , dnn = list("Observado", "Predito"))
 # </code r> ================================================================= #
-@
 
-Sensibilidade: quantos foram corretamente classificados como sobreviventes \\
-
-Especificidade: quantos foram corretamente classificados como não sobreviventes
-\\
-
-A maior sensibilidade, 92, é obtida com a Análise Discriminante Quadrática. \\
-
-A maior especificidade, 260, é obtida com o:
-
-\begin{itemize}
- \item ponto de corte 0.5 da Regressão Logística,
- \item ponto de corte 1.5 da Regressão Linear,
- \item ponto de corte 1.5 do Naive Bayes,
- \item ponto de corte 1.5 da Análise Discriminante Linear.
-\end{itemize}
-
-\vspace{\fill}
-
-\horrule{1pt} \\
-
-\end{document}

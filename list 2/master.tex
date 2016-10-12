@@ -21,6 +21,7 @@
 \newcommand{\hlkwb}[1]{\textcolor[rgb]{0.502,0.502,0.753}{\textbf{#1}}}%
 \newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0.502,0.753}{#1}}%
 \newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0.267,0.4}{#1}}%
+\let\hlipl\hlkwb
 
 \usepackage{framed}
 \makeatletter
@@ -104,12 +105,47 @@
 \textbf{Baixe o conjunto de dados \texttt{titanic.txt}. Cada observação deste
         banco é relativa a um passageiro do Titanic. As covariáveis indicam
         características destes passageiros; a variável resposta indica se o
-        passageiro sobreviveu ou não ao naufrágio.} \\
+        passageiro sobreviveu ou não ao naufrágio.}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{path} \hlkwb{<-} \hlstr{"C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/list 2/"}
+
+\hlstd{data} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"titanic.txt"}\hlstd{))}
+
+\hlkwd{summary}\hlstd{(data)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+  Class         Sex          Age       Survived  
+ 1st :325   Female: 470   Adult:2092   No :1490  
+ 2nd :285   Male  :1731   Child: 109   Yes: 711  
+ 3rd :706                                        
+ Crew:885                                        
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \textbf{Seu objetivo é criar classificadores para predizer a variável resposta
         com base nas covariáveis disponíveis. Para tanto, você deverá
         implementar os seguintes classificadores, assim como estimar seus
         riscos via conjunto de teste:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{test.psg} \hlkwb{<-} \hlkwd{sample}\hlstd{(}\hlkwc{size} \hlstd{=} \hlkwd{nrow}\hlstd{(data)} \hlopt{*} \hlnum{.2}\hlstd{,} \hlkwc{x} \hlstd{=} \hlnum{0}\hlopt{:}\hlkwd{nrow}\hlstd{(data))}
+
+\hlstd{train} \hlkwb{<-} \hlstd{data[}\hlopt{-}\hlstd{test.psg, ]} \hlcom{# nrow(train): 1761}
+
+\hlstd{test} \hlkwb{<-} \hlstd{data[test.psg, ]} \hlcom{# nrow(test): 440}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \begin{itemize}
  \item \textbf{Regressão Logística. Mostre os coeficientes estimados.}
@@ -118,8 +154,8 @@
  \item \textbf{Análise Discriminante Linear.}
  \item \textbf{Análise Discriminante Quadrática.}
  \item \textbf{KNN. Para isso você precisará transformar as covariáveis 
-                    categóricas em numéricas. Você pode usar variáveis dummies
-                    .}
+                    categóricas em numéricas. Você pode usar variáveis dummies.
+              }
 \end{itemize}
 
 \textbf{Responda ainda as seguintes perguntas:}
@@ -141,9 +177,109 @@
 \definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# <code r> ================================================================== #}
-\hlstd{path} \hlkwb{<-} \hlstr{"C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/list 2/"}
+\hlstd{reg.log} \hlkwb{<-} \hlkwd{glm}\hlstd{(Survived} \hlopt{~} \hlstd{., train,} \hlkwc{family} \hlstd{= binomial)}
 \hlcom{# </code r> ================================================================= #}
 \end{alltt}
+\end{kframe}
+\end{knitrout}
+
+As características (covariáveis) são significativas?
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{anova}\hlstd{(reg.log,} \hlkwc{test} \hlstd{=} \hlstr{"Chisq"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+Analysis of Deviance Table
+
+Model: binomial, link: logit
+
+Response: Survived
+
+Terms added sequentially (first to last)
+
+
+      Df Deviance Resid. Df Resid. Dev  Pr(>Chi)    
+NULL                   1760     2188.6              
+Class  3  136.709      1757     2051.8 < 2.2e-16 ***
+Sex    1  302.650      1756     1749.2 < 2.2e-16 ***
+Age    1   14.619      1755     1734.6 0.0001316 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Com as características sendo adicionadas sequencialmente, todas são
+estatísticamente significativas. \\
+
+E quando incluímos a característica num modelo que contem as demais?
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{car}\hlopt{::}\hlkwd{Anova}\hlstd{(reg.log)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+Analysis of Deviance Table (Type II tests)
+
+Response: Survived
+      LR Chisq Df Pr(>Chisq)    
+Class  102.029  3  < 2.2e-16 ***
+Sex    295.156  1  < 2.2e-16 ***
+Age     14.619  1  0.0001316 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Ainda assim todas as caractetísticas são significativas. \\
+
+Coeficientes estimados:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{cbind}\hlstd{(}\hlkwc{Estimates} \hlstd{=} \hlkwd{coef}\hlstd{(reg.log),} \hlkwd{confint.default}\hlstd{(reg.log))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+             Estimates      2.5 %     97.5 %
+(Intercept)  1.9759944  1.6093164  2.3426723
+Class2nd    -0.9312155 -1.3585515 -0.5038795
+Class3rd    -1.8377111 -2.2219188 -1.4535034
+ClassCrew   -0.7272476 -1.0722845 -0.3822108
+SexMale     -2.4929589 -2.8047147 -2.1812031
+AgeChild     1.0365795  0.5067773  1.5663817
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textit{Odds-ratios}:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{exp}\hlstd{(}\hlkwd{cbind}\hlstd{(}\hlkwc{OR} \hlstd{=} \hlkwd{coef}\hlstd{(reg.log),} \hlkwd{confint.default}\hlstd{(reg.log)))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+                    OR      2.5 %     97.5 %
+(Intercept) 7.21378916 4.99939231 10.4090159
+Class2nd    0.39407441 0.25703281  0.6041822
+Class3rd    0.15918136 0.10840090  0.2337499
+ClassCrew   0.48323720 0.34222580  0.6823512
+SexMale     0.08266501 0.06052404  0.1129056
+AgeChild    2.81955620 1.65993313  4.7892876
+\end{verbatim}
 \end{kframe}
 \end{knitrout}
 
@@ -151,25 +287,342 @@
 
 \horrule{.5pt}
 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{reg.lin} \hlkwb{<-} \hlkwd{lm}\hlstd{(}\hlkwd{as.numeric}\hlstd{(Survived)} \hlopt{~} \hlstd{., train)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+As características são significativas?
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{anova}\hlstd{(reg.lin)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+Analysis of Variance Table
+
+Response: as.numeric(Survived)
+            Df  Sum Sq Mean Sq F value    Pr(>F)    
+Class        3  31.041  10.347  64.529 < 2.2e-16 ***
+Sex          1  63.831  63.831 398.088 < 2.2e-16 ***
+Age          1   2.322   2.322  14.481 0.0001464 ***
+Residuals 1755 281.404   0.160                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Com as características sendo adicionadas sequencialmente, todas são
+estatísticamente significativas. \\
+
+E quando incluímos a característica num modelo que contem as demais?
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{car}\hlopt{::}\hlkwd{Anova}\hlstd{(reg.lin)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+Anova Table (Type II tests)
+
+Response: as.numeric(Survived)
+           Sum Sq   Df F value    Pr(>F)    
+Class      17.096    3  35.541 < 2.2e-16 ***
+Sex        61.478    1 383.410 < 2.2e-16 ***
+Age         2.322    1  14.481 0.0001464 ***
+Residuals 281.404 1755                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Ainda assim todas as caractetísticas são significativas. \\
+
+Coeficientes estimados:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{cbind}\hlstd{(}\hlkwc{Estimates} \hlstd{=} \hlkwd{coef}\hlstd{(reg.lin),} \hlkwd{confint}\hlstd{(reg.lin))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+             Estimates       2.5 %      97.5 %
+(Intercept)  1.8747836  1.81888956  1.93067768
+Class2nd    -0.1671427 -0.23797279 -0.09631268
+Class3rd    -0.3046091 -0.36459061 -0.24462767
+ClassCrew   -0.1523171 -0.21267124 -0.09196303
+SexMale     -0.4974034 -0.54722583 -0.44758103
+AgeChild     0.1682078  0.08151267  0.25490288
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 \subsection*{Naive Bayes}
 
 \horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(e1071)}
+
+\hlstd{nb} \hlkwb{<-} \hlkwd{naiveBayes}\hlstd{(Survived} \hlopt{~} \hlstd{., train)}
+
+\hlstd{nb}\hlopt{$}\hlstd{tables}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+$Class
+     Class
+Y            1st        2nd        3rd       Crew
+  No  0.08760331 0.11487603 0.35619835 0.44132231
+  Yes 0.28675136 0.17241379 0.23956443 0.30127042
+
+$Sex
+     Sex
+Y         Female       Male
+  No  0.08760331 0.91239669
+  Yes 0.49364791 0.50635209
+
+$Age
+     Age
+Y          Adult      Child
+  No  0.96115702 0.03884298
+  Yes 0.91651543 0.08348457
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \subsection*{Análise Discriminante Linear}
 
 \horrule{.5pt}
 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(MASS)}
+
+\hlstd{dl} \hlkwb{<-} \hlkwd{lda}\hlstd{(Survived} \hlopt{~} \hlstd{., train)}
+
+\hlstd{dl}\hlopt{$}\hlstd{scaling}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+                 LD1
+Class2nd  -0.8247560
+Class3rd  -1.5030759
+ClassCrew -0.7516000
+SexMale   -2.4544080
+AgeChild   0.8300114
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 \subsection*{Análise Discriminante Quadrática}
 
 \horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{dq} \hlkwb{<-} \hlkwd{qda}\hlstd{(Survived} \hlopt{~} \hlstd{., train)}
+
+\hlstd{dq}\hlopt{$}\hlstd{scaling}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+, , No
+
+                 1          2         3          4           5
+Class2nd  3.134756 -0.8719008 -3.084898 -0.1277106 -0.01557274
+Class3rd  0.000000 -2.1666026 -3.084898 -0.6300692  0.51345720
+ClassCrew 0.000000  0.0000000 -3.697256  0.1199123  0.01462184
+SexMale   0.000000  0.0000000  0.000000 -3.7335072 -0.45525544
+AgeChild  0.000000  0.0000000  0.000000  0.0000000 -5.41305198
+
+, , Yes
+
+                 1         2        3          4          5
+Class2nd  2.644922 0.7009925 1.335471 -0.2210384  0.6537404
+Class3rd  0.000000 2.4216105 1.335471  0.4330530  0.5476621
+ClassCrew 0.000000 0.0000000 2.606581  1.5146459 -0.2746628
+SexMale   0.000000 0.0000000 0.000000 -2.4252828  0.2847691
+AgeChild  0.000000 0.0000000 0.000000  0.0000000 -3.8243018
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \subsection*{KNN}
 
 \horrule{.5pt}
 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(FNN)}
+
+\hlstd{train.knn} \hlkwb{<-} \hlstd{train}
+\hlstd{train.knn}\hlopt{$}\hlstd{Class} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(train.knn}\hlopt{$}\hlstd{Class)}
+\hlstd{train.knn}\hlopt{$}\hlstd{Sex} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(train.knn}\hlopt{$}\hlstd{Sex)}
+\hlstd{train.knn}\hlopt{$}\hlstd{Age} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(train.knn}\hlopt{$}\hlstd{Age)}
+\hlstd{train.knn}\hlopt{$}\hlstd{Survived} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(train.knn}\hlopt{$}\hlstd{Survived)}
+
+\hlstd{test.knn} \hlkwb{<-} \hlstd{test}
+\hlstd{test.knn}\hlopt{$}\hlstd{Class} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(test.knn}\hlopt{$}\hlstd{Class)}
+\hlstd{test.knn}\hlopt{$}\hlstd{Sex} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(test.knn}\hlopt{$}\hlstd{Sex)}
+\hlstd{test.knn}\hlopt{$}\hlstd{Age} \hlkwb{<-} \hlkwd{as.numeric}\hlstd{(test.knn}\hlopt{$}\hlstd{Age)}
+
+\hlstd{risco} \hlkwb{<-} \hlnum{0}
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlkwd{nrow}\hlstd{(test.knn))\{}
+  \hlstd{knn} \hlkwb{<-} \hlkwd{knn.reg}\hlstd{(train.knn[ ,} \hlopt{-}\hlnum{4}\hlstd{], test.knn[ ,} \hlopt{-}\hlnum{4}\hlstd{], train.knn[ ,} \hlnum{4}\hlstd{],} \hlkwc{k} \hlstd{= i)}
+  \hlstd{risco[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{(test.knn}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{ifelse}\hlstd{(knn}\hlopt{$}\hlstd{pred} \hlopt{<} \hlnum{1.5}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{))\}}
+
+\hlkwd{library}\hlstd{(latticeExtra)}
+\hlkwd{xyplot}\hlstd{(risco} \hlopt{~} \hlnum{1}\hlopt{:}\hlkwd{nrow}\hlstd{(test.knn)}
+       \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"l"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"k"}
+       \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Risco"}
+       \hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}
+       \hlstd{,} \hlkwc{panel}\hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+         \hlkwd{panel.xyplot}\hlstd{(...)}
+         \hlkwd{panel.abline}\hlstd{(}\hlkwc{v} \hlstd{=} \hlkwd{which.min}\hlstd{(risco),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{lwd} \hlstd{=} \hlnum{2}\hlstd{)}
+         \hlkwd{panel.text}\hlstd{(}\hlnum{30}\hlstd{,} \hlnum{.295}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{paste}\hlstd{(}\hlstr{"k ="}\hlstd{,} \hlkwd{which.min}\hlstd{(risco)),} \hlkwc{col} \hlstd{=} \hlnum{2}\hlstd{)}
+         \hlstd{\})}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-15-1} 
+
+}
+
+
+
+\end{knitrout}
+
 \subsection*{Qual o melhor classificador segundo o risco estimado?}
 
 \horrule{.5pt}
+
+\subsubsection*{Regressão Logística:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{mean}\hlstd{(}
+  \hlstd{test}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.log, test,} \hlkwc{type} \hlstd{=} \hlstr{"response"}\hlstd{)} \hlopt{<} \hlnum{.5}
+                          \hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2409091
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection*{Regressão Linear:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{mean}\hlstd{(test}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.lin, test)} \hlopt{<} \hlnum{1.5}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2409091
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection*{Naive Bayes:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{mean}\hlstd{(test}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{predict}\hlstd{(nb, test))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2409091
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection*{Análise Discriminante Linear:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{mean}\hlstd{(test}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{predict}\hlstd{(dl, test)}\hlopt{$}\hlstd{class)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2409091
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection*{Análise Discriminante Quadrática:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{mean}\hlstd{(test}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{predict}\hlstd{(dq, test)}\hlopt{$}\hlstd{class)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2477273
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection*{KNN:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{knn} \hlkwb{<-} \hlkwd{knn.reg}\hlstd{(}
+  \hlstd{train.knn[ ,} \hlopt{-}\hlnum{4}\hlstd{], test.knn[ ,} \hlopt{-}\hlnum{4}\hlstd{], train.knn[ ,} \hlnum{4}\hlstd{],} \hlkwc{k} \hlstd{=} \hlkwd{which.min}\hlstd{(risco))}
+
+\hlkwd{mean}\hlstd{(test.knn}\hlopt{$}\hlstd{Survived} \hlopt{!=} \hlkwd{ifelse}\hlstd{(knn}\hlopt{$}\hlstd{pred} \hlopt{<} \hlnum{1.5}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2431818
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Com a Regressão Logística, Regressão Linear, Naive Bayes e Análise
+Discriminante Linear, o risco estimado é o mesmo, 0.2409091. \\
+
+Com o KNN o risco estimado é um pouco maior, 0.2431818. \\
+
+Com a Análise Discriminante Quadrática o maior risco foi estimado, 0.2477273.
 
 \subsection*{Para os classificadores baseados em estimativas de probabilidade,
              faça também as curvas ROC com o conjunto de teste. Faça também a
@@ -177,6 +630,281 @@
              corte é aquele que maximiza sensibilidade mais especificidade}
 
 \horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(pROC)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{2}\hlstd{))}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{predict}\hlstd{(reg.log, test,} \hlkwc{type} \hlstd{=} \hlstr{"response"}\hlstd{))}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Regressão Logística"}\hlstd{)}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{predict}\hlstd{(reg.lin, test))}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Regressão Linear"}\hlstd{)}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{as.numeric}\hlstd{(}\hlkwd{predict}\hlstd{(nb, test)))}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Naive Bayes"}\hlstd{)}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{as.numeric}\hlstd{(}\hlkwd{predict}\hlstd{(dl, test)}\hlopt{$}\hlstd{class))}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Discriminante Linear"}\hlstd{)}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{as.numeric}\hlstd{(}\hlkwd{predict}\hlstd{(dq, test)}\hlopt{$}\hlstd{class))}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Discriminante Quadrática"}\hlstd{)}
+
+\hlkwd{plot.roc}\hlstd{(}
+  \hlkwd{roc}\hlstd{(test}\hlopt{$}\hlstd{Survived, knn}\hlopt{$}\hlstd{pred)}
+  \hlstd{,} \hlkwc{print.auc} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{print.thres} \hlstd{=} \hlnum{TRUE}
+  \hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}
+  \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Especificidade"}
+  \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Sensibilidade"}
+  \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"KNN"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-22-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\large \textbf{Tabelas de confusão:} \normalsize \\
+
+\textbf{Regressão Logística:} \\
+
+Ponto de corte 0.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.log, test,} \hlkwc{type} \hlstd{=} \hlstr{"response"}\hlstd{)} \hlopt{<} \hlnum{.5}
+                            \hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  260  20
+      Yes  86  74
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Ponto de corte 0.299:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.log, test,} \hlkwc{type} \hlstd{=} \hlstr{"response"}\hlstd{)} \hlopt{<} \hlnum{.299}
+                            \hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  244  36
+      Yes  70  90
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Regressão Linear:} \\
+
+Ponto de corte 1.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.lin, test)} \hlopt{<} \hlnum{1.5}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  260  20
+      Yes  86  74
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Ponto de corte 1.309:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(}\hlkwd{predict}\hlstd{(reg.lin, test)} \hlopt{<} \hlnum{1.309}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  244  36
+      Yes  70  90
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Naive Bayes:} \\
+
+Ponto de corte 1.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{predict}\hlstd{(nb, test),} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  260  20
+      Yes  86  74
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Análise Discriminante Linear:} \\
+
+Ponto de corte 1.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{predict}\hlstd{(dl, test)}\hlopt{$}\hlstd{class}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  260  20
+      Yes  86  74
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Análise Discriminante Quadrática:} \\
+
+Ponto de corte 1.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{predict}\hlstd{(dq, test)}\hlopt{$}\hlstd{class}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  239  41
+      Yes  68  92
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{KNN:} \\
+
+Ponto de corte 1.5:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(knn}\hlopt{$}\hlstd{pred} \hlopt{<} \hlnum{1.5}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  244  36
+      Yes  71  89
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Ponto de corte 1.25:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{table}\hlstd{(test}\hlopt{$}\hlstd{Survived,} \hlkwd{ifelse}\hlstd{(knn}\hlopt{$}\hlstd{pred} \hlopt{<} \hlnum{1.25}\hlstd{,} \hlstr{"No"}\hlstd{,} \hlstr{"Yes"}\hlstd{)}
+      \hlstd{,} \hlkwc{dnn} \hlstd{=} \hlkwd{list}\hlstd{(}\hlstr{"Observado"}\hlstd{,} \hlstr{"Predito"}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+         Predito
+Observado  No Yes
+      No  244  36
+      Yes  71  89
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Sensibilidade: quantos foram corretamente classificados como sobreviventes \\
+
+Especificidade: quantos foram corretamente classificados como não sobreviventes
+\\
+
+A maior sensibilidade, 92, é obtida com a Análise Discriminante Quadrática. \\
+
+A maior especificidade, 260, é obtida com o:
+
+\begin{itemize}
+ \item ponto de corte 0.5 da Regressão Logística,
+ \item ponto de corte 1.5 da Regressão Linear,
+ \item ponto de corte 1.5 do Naive Bayes,
+ \item ponto de corte 1.5 da Análise Discriminante Linear.
+\end{itemize}
 
 \vspace{\fill}
 

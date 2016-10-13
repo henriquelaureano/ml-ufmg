@@ -1,0 +1,196 @@
+\documentclass[12pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0, 0, 0}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.502,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.651,0.522,0}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{1,0.502,0}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.733,0.475,0.467}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.502,0.502,0.753}{\textbf{#1}}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0.502,0.753}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0.267,0.4}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[brazilian, brazil]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[top = 2.5cm, left = 2.5cm, right = 2.5cm, bottom = 2.5cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage[normalem]{ulem}
+\usepackage{breqn}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\setlength\parindent{0pt}
+\newcommand{\eqnb}{\begin{equation}}
+\newcommand{\eqne}{\end{equation}}
+\newcommand{\eqnbs}{\begin{equation*}}
+\newcommand{\eqnes}{\end{equation*}}
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+\title{  
+ \normalfont \normalsize 
+ \textsc{est171 - Aprendizado de Máquina} \\
+ Departamento de Estatística \\
+ Universidade Federal de Minas Gerais \\ [25pt]
+ \horrule{.5pt} \\ [.4cm]
+ \huge Lista  3 \\
+ \horrule{2pt} \\[ .5cm]}
+ 
+\author{Henrique Aparecido Laureano \and Magno Tairone de Freitas Severino}
+\date{\normalsize Outubro de 2016}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\vspace{\fill}
+
+\tableofcontents
+
+\horrule{1pt} \\
+
+\newpage
+
+
+
+\section*{Exercício I}
+\addcontentsline{toc}{section}{Exercício I}
+
+\horrule{1pt} \\
+
+\textbf{Seu objetivo é criar classificadores para predizer o dígito
+        correspondente a uma imagem. O conjunto de dados está disponível em
+        https://www.kaggle.com/c/digit-recognizer.Você deve usar o arquivo
+        train.csv para criar os seus classificadores (incluindo validação), e
+        deve fornecer ao site as predições encontradas para o conjunto
+        test.csv. Note que os dígitos correspondentes no conjunto teste não
+        estão indicados! O site irá rankear seu grupo de acordo com as
+        predições fornecidas. Como parte do exercício, você deverá:}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{path} \hlkwb{<-} \hlstr{"C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/list 3/"}
+
+\hlstd{train} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"train.csv"}\hlstd{)}
+                   \hlstd{,} \hlkwc{header} \hlstd{=} \hlnum{TRUE}
+                   \hlstd{,} \hlkwc{sep} \hlstd{=} \hlstr{","}\hlstd{) ;} \hlkwd{dim}\hlstd{(train)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+[1] 42000   785
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{a) Inscrever seu time Kaggle. Qual o nome dele?}
+
+\horrule{.5pt} \\
+
+\textbf{b) Plotar 5 imagens deste banco.}
+
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(jpeg)}
+
+\hlstd{view} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{row}\hlstd{)\{}
+  \hlstd{c} \hlkwb{<-} \hlnum{1}
+  \hlstd{m} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{NA}\hlstd{,} \hlnum{28}\hlstd{,} \hlnum{28}\hlstd{)}
+  \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{28}\hlstd{)\{}
+    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{28}\hlstd{)\{}
+      \hlstd{m[i, j]} \hlkwb{<-} \hlstd{train[row,} \hlnum{1} \hlopt{+} \hlstd{c]}
+      \hlstd{c} \hlkwb{<-} \hlstd{c} \hlopt{+} \hlnum{1}\hlstd{\}\}}
+  \hlkwd{return}\hlstd{(}\hlkwd{t}\hlstd{(}\hlkwd{apply}\hlstd{(m,} \hlnum{2}\hlstd{, rev)))\}}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{),} \hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{)} \hlopt{+} \hlnum{.1}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{)} \hlkwd{image}\hlstd{(}\hlkwd{view}\hlstd{(i),} \hlkwc{col} \hlstd{=} \hlkwd{grey}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{0}\hlopt{:}\hlnum{255}\hlstd{)}\hlopt{/}\hlnum{256}\hlstd{),} \hlkwc{axes} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-2-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\textbf{Você também deve implementar os seguintes classificadores, assim como
+        estimar seus riscos via conjunto de teste (usando o conjunto de
+        validação para estimar seus erros), mostrar o resultado de cada um:} \\
+
+\textbf{c) Bagging}
+
+\horrule{.5pt} \\
+
+\textbf{d) Árvore de Classificação}
+
+\horrule{.5pt} \\
+
+\textbf{e) Boosting}
+
+\horrule{.5pt} \\
+
+\textbf{f) SVM}
+
+\horrule{.5pt} \\
+
+\textbf{Escolha um dos classificadores ajustados (o que achar melhor) e submeta
+        suas respostas ao site}
+
+\vspace{\fill}
+
+\horrule{1pt} \\
+
+\end{document}

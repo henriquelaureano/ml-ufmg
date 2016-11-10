@@ -70,6 +70,7 @@
 \newcommand{\eqnbs}{\begin{equation*}}
 \newcommand{\eqnes}{\end{equation*}}
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+\newcommand{\specialcell}[2][c]{\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 
 \title{  
  \normalfont \normalsize 
@@ -119,6 +120,20 @@
 \hlstd{path} \hlkwb{<-} \hlstr{"C:/Users/henri/Dropbox/Scripts/aprendizado de maquina/list 4/"}
 
 \hlstd{dados1} \hlkwb{<-} \hlkwd{load}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"dadosReviewGoogle.RData"}\hlstd{))}
+
+\hlcom{# write.csv2(as.data.frame(textos), "dados1.csv", row.names = FALSE)}
+
+\hlstd{texto} \hlkwb{<-} \hlkwd{read.csv2}\hlstd{(}\hlkwd{paste0}\hlstd{(path,} \hlstr{"dados1.csv"}\hlstd{),} \hlkwc{encoding} \hlstd{=} \hlstr{"UTF-8"}\hlstd{)}
+
+\hlstd{dados1} \hlkwb{<-} \hlkwd{cbind}\hlstd{(texto, nota)}
+
+\hlstd{dados1} \hlkwb{<-} \hlkwd{subset}\hlstd{(dados1,} \hlopt{!}\hlkwd{is.na}\hlstd{(textos)} \hlopt{& !}\hlkwd{is.na}\hlstd{(nota))}
+
+\hlstd{dados1[ ,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlkwd{as.character}\hlstd{(dados1[ ,} \hlnum{1}\hlstd{])}
+
+\hlstd{dados1[ ,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlkwd{gsub}\hlstd{(}\hlkwc{x} \hlstd{= dados1[ ,} \hlnum{1}\hlstd{],} \hlkwc{pattern} \hlstd{=} \hlstr{"!\textbackslash{}t"}\hlstd{,} \hlkwc{replacement} \hlstd{=} \hlstr{"! "}\hlstd{)}
+
+\hlstd{dados1[ ,} \hlnum{1}\hlstd{]} \hlkwb{<-} \hlkwd{gsub}\hlstd{(}\hlkwc{x} \hlstd{= dados1[ ,} \hlnum{1}\hlstd{],} \hlkwc{pattern} \hlstd{=} \hlstr{"\textbackslash{}t"}\hlstd{,} \hlkwc{replacement} \hlstd{=} \hlstr{". "}\hlstd{)}
 \hlcom{# </code r> ================================================================= #}
 \end{alltt}
 \end{kframe}
@@ -126,31 +141,481 @@
 
 \textbf{a) Mostre 5 resenhas do banco juntamente com suas respectivas notas.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{cc}
+  \toprule
+Notas & Resenha \\ 
+  \midrule
+1 & \specialcell{Péssimo, um lixo!\\
+                 Comprei a nova versão por R\$2,00, mas me arrependi pois não
+                 roda!\\
+                 Desinstalei e baixei novamente e nada!\\
+                 Só o que faz é reiniciar o serviço de telefonia!\\
+                 NÃO CAIAM NESSA!!!} \\ \hline
+  1 & \specialcell{Bugs. Nao consigo jogar é uma bosta gastei meu dinhero para
+                   nada} \\ \hline
+  1 & \specialcell{Nao satisfeito.\\
+                   O app nao roda fica tudo em branco resolvam este problema
+                   que parece geral\\
+                   todos reclamam me admira a appstore  manter isto ainda para
+                   venda é lastimável} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{cc}
+  \toprule
+Notas & Resenha \\ 
+  \midrule
+5 & Galaxy S3. Muito bom o app não tenho oque reclamar... \\ \hline
+  1 & \specialcell{Fix the issues.\\
+                   O jogo é excelente mas esse problema que todos relatam
+                   precisa ser resolvido.\\
+                   Acontece a mesma coisa comigo, fica impossível jogar. Não
+                   carrega, trava..} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
 
 \textbf{Para os itens que seguem, você pode trabalhar com um subconjunto dos
-        dados originais.} \\
+        dados originais.}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{sd1} \hlkwb{<-} \hlstd{dados1[}\hlkwd{sample}\hlstd{(}\hlnum{1}\hlopt{:}\hlkwd{nrow}\hlstd{(dados1),} \hlnum{1000}\hlstd{), ]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \textbf{b) Use o código fornecido para converter os textos em uma matriz
            documento-termo binária (isto é, cada entrada da matriz indica se um
            termo está presente ou não no respectivo texto.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(tm)}
+
+\hlstd{corp} \hlkwb{<-} \hlkwd{VCorpus}\hlstd{(}
+  \hlkwd{VectorSource}\hlstd{(sd1[ ,} \hlnum{1}\hlstd{]),} \hlkwc{readerControl} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{language} \hlstd{=} \hlstr{"portuguese"}\hlstd{))}
+
+\hlstd{corp} \hlkwb{<-} \hlkwd{tm_map}\hlstd{(corp, removeWords,} \hlkwd{stopwords}\hlstd{(}\hlstr{"portuguese"}\hlstd{))}
+
+\hlkwd{library}\hlstd{(SnowballC)}
+
+\hlstd{corp} \hlkwb{<-} \hlkwd{tm_map}\hlstd{(corp, stemDocument)}
+
+\hlstd{corp} \hlkwb{<-} \hlkwd{tm_map}\hlstd{(corp, stripWhitespace)}
+
+\hlstd{dtm} \hlkwb{<-} \hlkwd{DocumentTermMatrix}\hlstd{(corp,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}
+  \hlkwc{tolower} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{removeNumbers} \hlstd{=} \hlnum{TRUE}\hlstd{,} \hlkwc{removePunctuation} \hlstd{=} \hlnum{TRUE}\hlstd{))}
+
+\hlstd{dtm} \hlkwb{<-} \hlkwd{as.matrix}\hlstd{(dtm)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \textbf{c) Use duas técnicas de clustering para criar agrupamentos dos
            diferentes textos (não use as notas pra isso). Para a técnica que
            foi fornecida, faça também duas variações. Interprete os grupos
            obtidos por cada um dos métodos. Eles concordam entre si?}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
 
-\textbf{d) Mostre as 5 regrasde associação encontradas (não use as notas pra
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{dtm.dist} \hlkwb{<-} \hlkwd{dist}\hlstd{(dtm)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Métodos Hierárquicos: \\
+
+\begin{itemize}
+ \item Complete: Dissimilaridade máxima entre clusters
+ \item Single: Dissimilaridade mínima entre clusters
+\end{itemize}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{clus.comp} \hlkwb{<-} \hlkwd{hclust}\hlstd{(dtm.dist,} \hlkwc{method} \hlstd{=} \hlstr{"complete"}\hlstd{)}
+
+\hlstd{clus.sing} \hlkwb{<-} \hlkwd{hclust}\hlstd{(dtm.dist,} \hlkwc{method} \hlstd{=} \hlstr{"single"}\hlstd{)}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{),} \hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{0}\hlstd{)} \hlopt{+} \hlnum{.1}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(clus.comp,} \hlkwc{main} \hlstd{=} \hlstr{"Método Hierárquico\textbackslash{}n(Linkage: Complete)"}
+     \hlstd{,} \hlkwc{labels} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlnum{NA}\hlstd{,} \hlkwc{sub} \hlstd{=} \hlnum{NA}\hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{)}
+
+\hlkwd{plot}\hlstd{(clus.sing,} \hlkwc{main} \hlstd{=} \hlstr{"Método Hierárquico\textbackslash{}n(Linkage: Single)"}
+     \hlstd{,} \hlkwc{labels} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlnum{NA}\hlstd{,} \hlkwc{sub} \hlstd{=} \hlnum{NA}\hlstd{,} \hlkwc{las} \hlstd{=} \hlnum{1}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-5-1} 
+
+}
+
+
+
+\end{knitrout}
+
+K-Médias: \\
+
+\begin{multicols}{2}
+ \begin{itemize}
+  \item Algoritmo de Hartigan-Wong
+  \item Algoritmo de Lloyd
+ \end{itemize}
+\end{multicols}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{km.hw} \hlkwb{<-} \hlkwd{kmeans}\hlstd{(dtm,} \hlnum{3}\hlstd{,} \hlkwc{algorithm} \hlstd{=} \hlstr{"Hartigan-Wong"}\hlstd{)}
+
+\hlstd{km.l} \hlkwb{<-} \hlkwd{kmeans}\hlstd{(dtm,} \hlnum{3}\hlstd{,} \hlkwc{algorithm} \hlstd{=} \hlstr{"Lloyd"}\hlstd{,} \hlkwc{iter.max} \hlstd{=} \hlnum{15}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Número de resenhas em cada cluster}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(latticeExtra)}
+
+\hlstd{bar} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{y}\hlstd{,} \hlkwc{main}\hlstd{)\{}
+  \hlkwd{barchart}\hlstd{(}\hlkwd{as.factor}\hlstd{(y)}
+           \hlstd{,} \hlkwc{xlim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{50}\hlstd{,} \hlnum{1125}\hlstd{)}
+           \hlstd{,} \hlkwc{main} \hlstd{= main}
+           \hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"#0080ff"}
+           \hlstd{,} \hlkwc{border} \hlstd{=} \hlstr{"transparent"}
+           \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Resenhas"}
+           \hlstd{,} \hlkwc{panel} \hlstd{=} \hlkwa{function}\hlstd{(}\hlkwc{...}\hlstd{)\{}
+             \hlkwd{panel.barchart}\hlstd{(...)}
+             \hlstd{args} \hlkwb{<-} \hlkwd{list}\hlstd{(...)}
+             \hlkwd{panel.text}\hlstd{(args}\hlopt{$}\hlstd{x, args}\hlopt{$}\hlstd{y, args}\hlopt{$}\hlstd{x,} \hlkwc{pos} \hlstd{=} \hlnum{4}\hlstd{)\})\}}
+
+\hlkwd{print}\hlstd{(}\hlkwd{bar}\hlstd{(}\hlkwd{cutree}\hlstd{(clus.comp,} \hlnum{3}\hlstd{)}
+          \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Método Hierárquico\textbackslash{}n(Linkage: Complete)"}\hlstd{)}
+  \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+  \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{bar}\hlstd{(}\hlkwd{cutree}\hlstd{(clus.sing,} \hlnum{3}\hlstd{)}
+          \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Método Hierárquico\textbackslash{}n(Linkage: Single)"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{bar}\hlstd{(km.hw}\hlopt{$}\hlstd{cluster}
+          \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"K-Médias\textbackslash{}n(Algoritmo: Hartigan-Wong)"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{bar}\hlstd{(km.l}\hlopt{$}\hlstd{cluster}
+          \hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"K-Médias\textbackslash{}n(Algoritmo: Lloyd)"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{.5}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-7-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Para utilizar a técnica K-Médias é necessário especificar o número de clusters.
+Na utilização do Método Hierárquico vimos que com mais de três clusters são
+formados apenas clusters com uma única resenha. \\
+
+Independente do método e da variação foi obtido um cluster com um número maciço
+de resenhas, contudo, no K-Médias, para ambos algoritmos, os demais dois
+clusters tem um número bem considerável de resenhas. \\
+
+\textbf{d) Mostre as 5 regras de associação encontradas (não use as notas pra
            isso) usando o algoritmo \textit{a priori} com maior suporte, as 5
            com maior confiança e as 5 com maior lift. Interprete o valor do
            suporte, lift e confiança de uma regra de sua escolha. Mostre ao
            menos 3 maneiras distintas essas regras visualmente.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(arulesViz)}
+
+\hlstd{rules} \hlkwb{<-} \hlkwd{apriori}\hlstd{(dtm,} \hlkwc{parameter} \hlstd{=} \hlkwd{list}\hlstd{(}
+  \hlkwc{support} \hlstd{=} \hlnum{.005}\hlstd{,} \hlkwc{confidence} \hlstd{=} \hlnum{.5}\hlstd{,} \hlkwc{maxlen} \hlstd{=} \hlnum{3}\hlstd{),} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}
+    \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Suporte
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"support"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{])}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+    lhs           rhs   support confidence lift    
+[1] {muit}     => {bom} 0.148   0.6883721  1.885951
+[2] {melhor}   => {jog} 0.069   0.6509434  1.546184
+[3] {nao}      => {jog} 0.059   0.5221239  1.240199
+[4] {jog,muit} => {bom} 0.057   0.6195652  1.697439
+[5] {fic}      => {jog} 0.041   0.6212121  1.475563
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"support"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"graph"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-10-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"support"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"grouped"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-11-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\vspace{-.75cm}
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"support"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"paracoord"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-12-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Confiança
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{])}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+    lhs       rhs      support confidence lift     
+[1] {rea}  => {jog}    0.005   1           2.375297
+[2] {poss} => {jog}    0.005   1           2.375297
+[3] {roms} => {baix}   0.005   1           8.333333
+[4] {tamb} => {jog}    0.005   1           2.375297
+[5] {dei}  => {estrel} 0.006   1          22.222222
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+     \hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"graph"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-14-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+     \hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"grouped"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-15-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+     \hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"paracoord"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-16-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\newpage
+Lift
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{])}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+    lhs            rhs     support confidence lift    
+[1] {birds,tod} => {angry} 0.005   1.0000000  76.92308
+[2] {birds,bom} => {angry} 0.007   1.0000000  76.92308
+[3] {menos}     => {mais}  0.005   0.8333333  75.75758
+[4] {angry}     => {birds} 0.013   1.0000000  71.42857
+[5] {birds}     => {angry} 0.013   0.9285714  71.42857
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"graph"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-18-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"grouped"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-19-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"paracoord"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-20-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\newpage
+Regra escolhida: angry => birds \\
+
+Suporte de 0.013, i.e., probabilidade de 0.013 de que as palavras angry e
+birds aparecam. \\
+
+Confiança de 1, i.e., todos os usuários que em suas resenhas utilizaram a
+palavra angry também usaram a palavra birds. \\
+
+Lift de 0.714, i.e., dado que o usuário utilizou a palavra angry em sua
+resenha, a probabilidade dele utilizar a palavra birds aumenta 0.714. \\
 
 \textbf{e) Implemente componentes principais para esses dados (não use as notas
            pra isso). Mostre quais são as 5 variáveis que recebem os maiores
@@ -165,7 +630,264 @@
            Repita o procedimento usando os três primeiros componentes, isto é,
            usando um gráfico em 3d.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{pca} \hlkwb{<-} \hlkwd{prcomp}\hlstd{(dtm)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Maiores cargas do primeiro componente}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{sort}\hlstd{(pca}\hlopt{$}\hlstd{rotation[ ,} \hlnum{1}\hlstd{],} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+       jog     melhor        nao       baix        fic 
+0.96340337 0.07838049 0.06380642 0.05858186 0.05602059 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Menores cargas do primeiro componente}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{sort}\hlstd{(pca}\hlopt{$}\hlstd{rotation[ ,} \hlnum{1}\hlstd{])[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+        muit        demor    recomendo        angry       baixar 
+-0.010736105 -0.008374956 -0.007447166 -0.006668486 -0.006481232 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+No primeiro componente vemos palavras que são de se esperar que aparecam com
+grande frequência nas resenhas, mas nenhuma interpretação em relação a
+utilização dessas palavras é possível.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Maiores cargas do segundo componente}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{sort}\hlstd{(pca}\hlopt{$}\hlstd{rotation[ ,} \hlnum{2}\hlstd{],} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+       bom       muit        jog       pass      recom 
+0.87326616 0.42717574 0.03000869 0.02856446 0.02765368 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Menores cargas do segundo componente}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{sort}\hlstd{(pca}\hlopt{$}\hlstd{rotation[ ,} \hlnum{2}\hlstd{])[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+        nao         fic        baix       legal     atualiz 
+-0.14399184 -0.03662807 -0.03153271 -0.03018729 -0.02336789 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+O mesmo pode ser dito no segundo componente.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Diagrama de dispersão dos dois primeiros componentes principais}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{xyplot}\hlstd{(pca}\hlopt{$}\hlstd{x[ ,} \hlnum{1}\hlstd{]} \hlopt{~} \hlstd{pca}\hlopt{$}\hlstd{x[ ,} \hlnum{2}\hlstd{],} \hlkwc{groups} \hlstd{= sd1}\hlopt{$}\hlstd{nota}
+       \hlstd{,} \hlkwc{xlim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{1.5}\hlstd{,} \hlnum{7.5}\hlstd{),} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{1.5}\hlstd{,} \hlnum{7.5}\hlstd{),} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{),} \hlkwc{pch} \hlstd{=} \hlnum{16}
+       \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Segundo componente"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Primeiro componente"}
+       \hlstd{,} \hlkwc{key} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{space} \hlstd{=} \hlstr{"top"}\hlstd{,} \hlkwc{text} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"Nota"}\hlstd{,} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{))}
+                    \hlstd{,} \hlkwc{points} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{trellis.par.get}\hlstd{(}
+                      \hlstr{"superpose.symbol"}\hlstd{)}\hlopt{$}\hlstd{col[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]),} \hlkwc{columns} \hlstd{=} \hlnum{3}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-26-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Nenhuma relação é observada entre as notas e os componentes, mas alguns poucos
+outliers podem ser vistos.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Outliers}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{pca}\hlopt{$}\hlstd{x[ ,} \hlnum{1}\hlstd{][pca}\hlopt{$}\hlstd{x[ ,} \hlnum{1}\hlstd{]} \hlopt{>} \hlnum{3.65}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+     215      837      848 
+3.866555 3.691804 6.897367 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{cccc}
+  \toprule
+Número & Nota & Primeiro componente & Segundo componente \\
+  \midrule
+215 & 4 & 3.8665553 & 0.5395614 \\
+837 & 3 & 3.6918041 & \ensuremath{-0.2755661} \\
+848 & 1 & 6.8973669 & \ensuremath{-0.4120806} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{cc}
+  \toprule
+Número & Resenha \\
+  \midrule
+215 & \specialcell{Melhorar inteligência artificial!!!!\\É o jogo que eu mais
+      jogo no celular dentre muitos que tenho!\\Gosto realmente MUITO dele!\\
+      Gráficos habilidade, jogabilidade, etc.. Muito legal!\\Mas a inteligência
+      artificial tem que melhorar!\\Eu sei que não dá pra ser 100\% mas o
+      computador comprar do lixo\\e descartar a mesma carta eh falha dos
+      desenvolvedores...\\Além disso ele poderia completar o jogo que acabei de
+      fazer ao invés de\\montar outro com a sequência certa para o que seria a
+      canastra do jogo\\que fiz... Enfim, são opiniões de um fã do jogo! Grato}
+      \\ \hline
+  837 & \specialcell{De que adianta jogar e não salvar?.\\O emulador é ótimo,
+        consigo jogar Super Mario normal nele,\\mas não adianta nada você jogar
+        pelo app gratuito,\\pra depois ter que pagar, pra continuar de onde
+        parou.\\Pelo menos isso, acho que poderia ter na versão grátis.\\Jogar
+        um monte de fases e ter que pagar depois é sacanagem.} \\ \hline
+  848 & \specialcell{Problemas. Comprei o jogo mas sempre dá problema,\\ele
+        baixa o arquivo do jogo e diz que o download foi completo,\\clico ok
+        para começar o jogo e aparece aquele vídeo de introdução do jogo\\e
+        após isso o jogo fecha, abro novamente aí o jogo diz\\que falta baixar
+        alguns mb's do jogo ainda\\mas quando termina esse novo download o
+        mesmo problema acontece.\\Já tentei mais de 10 vezes e nada.\\Meu
+        dispositivo é um Acer Iconia Tab A500} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Diagrama de dispersão dos três primeiros componentes principais}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{cloud}\hlstd{(pca}\hlopt{$}\hlstd{x[ ,} \hlnum{3}\hlstd{]} \hlopt{~} \hlstd{pca}\hlopt{$}\hlstd{x[ ,} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{pca}\hlopt{$}\hlstd{x[ ,} \hlnum{2}\hlstd{],} \hlkwc{groups} \hlstd{= sd1}\hlopt{$}\hlstd{nota,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+      \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"1o"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"2o"}\hlstd{,} \hlkwc{zlab} \hlstd{=} \hlstr{"3o"}
+      \hlstd{,}  \hlkwc{key} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{space} \hlstd{=} \hlstr{"top"}\hlstd{,} \hlkwc{text} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwd{paste}\hlstd{(}\hlstr{"Nota"}\hlstd{,} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{))}
+                    \hlstd{,} \hlkwc{points} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{col} \hlstd{=} \hlkwd{trellis.par.get}\hlstd{(}
+                      \hlstr{"superpose.symbol"}\hlstd{)}\hlopt{$}\hlstd{col[}\hlnum{1}\hlopt{:}\hlnum{5}\hlstd{]),} \hlkwc{columns} \hlstd{=} \hlnum{5}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-28-1} 
+
+}
+
+
+
+\end{knitrout}
+
+Nenhuma relação é observada entre as notas e os componentes, mas alguns poucos
+outliers podem ser vistos.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Outliers}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{pca}\hlopt{$}\hlstd{x[ ,} \hlnum{3}\hlstd{][pca}\hlopt{$}\hlstd{x[ ,} \hlnum{3}\hlstd{]} \hlopt{< -}\hlnum{1.65}\hlstd{]}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+       287        562        633 
+-10.637222  -1.656143  -2.374130 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{ccccc}
+  \toprule
+Número & Nota &
+Primeiro componente & Segundo componente & Terceiro componente\\
+  \midrule
+287 & 5 &
+1.4976688 & \ensuremath{-0.7937088} & \ensuremath{-10.6372219} \\
+562 & 4 &
+\ensuremath{-0.0562927} & \ensuremath{-0.6778608} & \ensuremath{-1.6561426} \\
+633 & 2 &
+\ensuremath{-0.5795473} & \ensuremath{-0.5392238} & \ensuremath{-2.3741299} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+ \begin{tabular}{cc}
+  \toprule
+Número & Resenha \\
+  \midrule
+287 & \specialcell{O melhor jogo estilo gta para Android. Vale a pena ser
+      comprado,\\basicamente ele usa o mesmo conceito que vemos no GTA,\\só
+      que voce não pega o carro de ninguem,\\pode explorar o mapa aberto mas
+      usa apenas seus proprios bat vehiculos\\e tem algumas características de
+      RPG,\\como o aumento de nível e desbloqueio de habilidades e armas.\\A
+      gameloft caprichou no jogo,\\voce poder planar e cair batendo no chão
+      desequilibrando os inimigos,\\é ótimo e super emocionante, ou pular de
+      um lugar mais algo\\e cair batendo e deixar um inimigo inconsciente,\\
+      com direito a camera em slow motion, enfim ficou até bem feito,\\mas
+      possui algumas coisinhas que deixaram ele chato,\\as lutas são muito
+      bonitas de se ver, mas não exigem nada do jogador,\\apesar das missões
+      principais serem até legais,\\elas não são suficiente para voce aumentar
+      o nivel,\\logo voce deve recorrer às side quests que são sempre a mesma
+      coisa,\\massante e repetitiva, e ainda, o batrangue ficou muito
+      poderoso,\\voce pode somente com ele m...} \\ \hline
+  562 & \specialcell{Antes era melhor....\\Cara, eu quando compre o meu lg
+        optimus l5ii dual, baixei esse jogo,\\era fooooda, viciei ate, ai foi
+        atualizando e fico uma merda,\\fica travando o jogo,\\ja teve vez do
+        meu boneco ficar ativando o jetpack sem eu clicar na tela,\\e na hr q
+        começa da um leg triste, ajeita pf cara} \\ \hline
+  633 & \specialcell{JOGO QUASE PERFEITO.\\JOGO BACANA AS ARMADURAS ESTÃO
+        IGUAIS AO FILME.\\TALVEZ PODE SER UNS DOS MELHORES PARA PODER BAIXAR\\
+        O GRÁFICO É BEM REALISTA\\O JOGADOR PODE SE SENTIR O PRÓPRIO HERÓI\\
+        JONY STARK SALVANDO O MUNDO.\\JOGO QUASE PERFEITO PODEM BAIXAR\\PENA
+        QUE DEIXARAM DE SALVAR AS COSTAS DOS USUÁRIOS\\EM NUVEM PORQUE TEM RANK
+        MUNDIAL\\TALVEZ A MAIORIA DAS PESSOAS DEVEM TROCAR DE APARELHO\\EM
+        ALGUM MOMENTO DE SUA VIDA.\\VOCÊS DEVERIAM SALVAR AS CONTAS EM NUVEM\\
+        PARA PODER GARANTIR O RANK DE TODOS USUÁRIOS.\\Rodo perfeito no meu
+        OptimusG} \\
+  \bottomrule
+ \end{tabular}
+\end{table}
 
 \textbf{f) Implemente kernel PCA para esses dados, e trabalhe com ao menos duas
            variações dela. Plote novamente o gráfico de dispersão para essas
@@ -175,48 +897,333 @@
 
 \horrule{.5pt}
 
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{library}\hlstd{(kernlab)}
+
+\hlcom{## Kernel polinomial}
+\hlstd{pca2} \hlkwb{<-} \hlkwd{kpca}\hlstd{(dtm,} \hlkwc{kernel} \hlstd{=} \hlstr{"polydot"}\hlstd{,}\hlkwc{kpar} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{degree} \hlstd{=} \hlnum{1}\hlstd{),} \hlkwc{features} \hlstd{=} \hlnum{3}\hlstd{)}
+
+\hlcom{## Kernel radial basis, "gaussiano"}
+\hlstd{pca3} \hlkwb{<-} \hlkwd{kpca}\hlstd{(dtm,} \hlkwc{kernel} \hlstd{=} \hlstr{"rbfdot"}\hlstd{,} \hlkwc{kpar} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{sigma} \hlstd{=} \hlnum{1}\hlstd{),} \hlkwc{features} \hlstd{=} \hlnum{3}\hlstd{)}
+
+\hlcom{## Kenrel bessel}
+\hlstd{pca4} \hlkwb{<-} \hlkwd{kpca}\hlstd{(dtm,} \hlkwc{kernel} \hlstd{=} \hlstr{"besseldot"}\hlstd{,} \hlkwc{kpar} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{degree} \hlstd{=} \hlnum{1}\hlstd{),} \hlkwc{features} \hlstd{=} \hlnum{3}\hlstd{)}
+
+\hlcom{## Kernel tangente hiperbólica}
+\hlstd{pca5} \hlkwb{<-} \hlkwd{kpca}\hlstd{(dtm,} \hlkwc{kernel} \hlstd{=} \hlstr{"tanhdot"}\hlstd{,} \hlkwc{kpar} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{scale} \hlstd{=} \hlnum{1}\hlstd{),} \hlkwc{features} \hlstd{=} \hlnum{3}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Diagramas de dispersão dos dois primeiros componentes principais}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{kpc2} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{f}\hlstd{,} \hlkwc{main}\hlstd{)\{}
+  \hlkwd{xyplot}\hlstd{(f,} \hlkwc{main} \hlstd{= main}
+         \hlstd{,} \hlkwc{type} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"p"}\hlstd{,} \hlstr{"g"}\hlstd{)}
+         \hlstd{,} \hlkwc{pch} \hlstd{=} \hlnum{16}
+         \hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Segundo componente"}
+         \hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Primeiro componente"}\hlstd{)\}}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc2}\hlstd{(pca2}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{~} \hlstd{pca2}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel polinomial"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc2}\hlstd{(pca3}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{~} \hlstd{pca3}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel radial basis"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc2}\hlstd{(pca4}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{~} \hlstd{pca4}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel bessel"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc2}\hlstd{(pca5}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{~} \hlstd{pca5}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel tangente hiperbólica"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{.5}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-31-1} 
+
+}
+
+
+
+\end{knitrout}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Diagramas de dispersão dos três primeiros componentes principais}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{kpc3} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{f}\hlstd{,} \hlkwc{main}\hlstd{)\{}
+  \hlkwd{cloud}\hlstd{(f,} \hlkwc{main} \hlstd{= main,} \hlkwc{pch} \hlstd{=} \hlnum{16}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"1o"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"2o"}\hlstd{,} \hlkwc{zlab} \hlstd{=} \hlstr{"3o"}\hlstd{)\}}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc3}\hlstd{(pca2}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{3}\hlstd{]} \hlopt{~} \hlstd{pca2}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{pca2}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel polinomial"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc3}\hlstd{(pca3}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{3}\hlstd{]} \hlopt{~} \hlstd{pca3}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{pca3}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel radial basis"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{1}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc3}\hlstd{(pca4}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{3}\hlstd{]} \hlopt{~} \hlstd{pca4}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{pca4}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel bessel"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{.5}\hlstd{,} \hlnum{.5}\hlstd{)}
+      \hlstd{,} \hlkwc{more} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+
+\hlkwd{print}\hlstd{(}\hlkwd{kpc3}\hlstd{(pca5}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{3}\hlstd{]} \hlopt{~} \hlstd{pca5}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{1}\hlstd{]} \hlopt{+} \hlstd{pca5}\hlopt{@}\hlkwc{rotated}\hlstd{[ ,} \hlnum{2}\hlstd{]}
+           \hlstd{,} \hlstr{"Kernel tangente hiperbólica"}\hlstd{)}
+      \hlstd{,} \hlkwc{position} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{.5}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{.5}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-32-1} 
+
+}
+
+
+
+\end{knitrout}
+
+De uma variação, kernel, para outra os gráficos de dispersão são muito 
+diferentes entre si. Nos kernels bessel e tangente hiperbólica observamos uma
+maior semelhança nos valores dos componentes principais.
+
 \section*{Exercício 2}
 \addcontentsline{toc}{section}{Exercício 2}
 
 \horrule{1pt} \\
 
-\textbf{Baixe o arquivo lista4.R Ele mostra um código para baixar o banco de
+\textbf{Baixe o arquivo lista4.R. Ele mostra um código para baixar o banco de
         dados IncomeESL, que será utilizado neste exercício. Este banco mede
         diversas covariáveis em indivíduos americanos, como salário, origem e
         nível de educação. O código fornecido converte este banco para o
         formato \texttt{transactions}, que será usado para implementar as
         regras de associação vistas em aula. Em particular, o código discretiza
-        as variáveis numéricas. Usando o algoritmo a priori:} \\
+        as variáveis numéricas.}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## lista4.R}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{data}\hlstd{(}\hlstr{"IncomeESL"}\hlstd{)}
+
+\hlcom{## Removendo casos com missing}
+\hlstd{IncomeESL} \hlkwb{<-} \hlstd{IncomeESL[}\hlkwd{complete.cases}\hlstd{(IncomeESL), ]}
+
+\hlcom{## Preparando os dados}
+\hlstd{IncomeESL[[}\hlstr{"income"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{((}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"income"}\hlstd{]])} \hlopt{>} \hlnum{6}\hlstd{)} \hlopt{+} \hlnum{1}
+                                \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}
+                                \hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"$0-$40,000"}\hlstd{,} \hlstr{"$40,000+"}\hlstd{))}
+
+\hlstd{IncomeESL[[}\hlstr{"age"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{((}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"age"}\hlstd{]])} \hlopt{>} \hlnum{3}\hlstd{)} \hlopt{+} \hlnum{1}
+                             \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"14-34"}\hlstd{,} \hlstr{"35+"}\hlstd{))}
+
+\hlstd{IncomeESL[[}\hlstr{"education"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{(}
+  \hlstd{(}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"education"}\hlstd{]])} \hlopt{>} \hlnum{4}\hlstd{)} \hlopt{+} \hlnum{1}
+  \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"no college graduate"}\hlstd{,} \hlstr{"college graduate"}\hlstd{))}
+
+\hlstd{IncomeESL[[}\hlstr{"years in bay area"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{(}
+  \hlstd{(}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"years in bay area"}\hlstd{]])} \hlopt{>} \hlnum{4}\hlstd{)} \hlopt{+} \hlnum{1}
+  \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"1-9"}\hlstd{,} \hlstr{"10+"}\hlstd{))}
+
+\hlstd{IncomeESL[[}\hlstr{"number in household"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{(}
+  \hlstd{(}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"number in household"}\hlstd{]])} \hlopt{>} \hlnum{3}\hlstd{)} \hlopt{+} \hlnum{1}
+  \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"1"}\hlstd{,} \hlstr{"2+"}\hlstd{))}
+
+\hlstd{IncomeESL[[}\hlstr{"number of children"}\hlstd{]]} \hlkwb{<-} \hlkwd{factor}\hlstd{(}
+  \hlstd{(}\hlkwd{as.numeric}\hlstd{(IncomeESL[[}\hlstr{"number of children"}\hlstd{]])} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{+} \hlnum{0}
+  \hlstd{,} \hlkwc{levels} \hlstd{=} \hlnum{0}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"0"}\hlstd{,} \hlstr{"1+"}\hlstd{))}
+
+\hlcom{## Criando transactions}
+\hlstd{Income} \hlkwb{<-} \hlkwd{as}\hlstd{(IncomeESL,} \hlstr{"transactions"}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Usando o algoritmo a priori:} \\
 
 \textbf{Mostre as 10 regras (juntamente com suporte, confiança e lift) com 
         maior lift entre regras com suporte de ao menos 0.001, confiança ao
         menos 0.8, e tamanho máximo 3.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{rules} \hlkwb{<-} \hlkwd{apriori}\hlstd{(Income,} \hlkwd{list}\hlstd{(}\hlkwc{support} \hlstd{=} \hlnum{.001}\hlstd{,} \hlkwc{confidence} \hlstd{=} \hlnum{.8}\hlstd{,} \hlkwc{maxlen} \hlstd{=} \hlnum{3}\hlstd{)}
+                 \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+\hlkwd{options}\hlstd{(}\hlkwc{digits} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing}\hlstd{=}\hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{])}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+     lhs                           rhs                              support confidence lift
+[1]  {marital status=divorced,                                                             
+      language in home=spanish} => {ethnic classification=hispanic}  0.0042       0.97  7.6
+[2]  {occupation=laborer,                                                                  
+      language in home=spanish} => {ethnic classification=hispanic}  0.0128       0.94  7.4
+[3]  {occupation=retired,                                                                  
+      language in home=spanish} => {ethnic classification=hispanic}  0.0016       0.92  7.2
+[4]  {occupation=unemployed,                                                               
+      language in home=spanish} => {ethnic classification=hispanic}  0.0031       0.91  7.2
+[5]  {number of children=1+,                                                               
+      language in home=spanish} => {ethnic classification=hispanic}  0.0291       0.90  7.1
+[6]  {income=$0-$40,000,                                                                   
+      language in home=spanish} => {ethnic classification=hispanic}  0.0403       0.90  7.1
+[7]  {number in household=2+,                                                              
+      language in home=spanish} => {ethnic classification=hispanic}  0.0278       0.90  7.1
+[8]  {type of home=house,                                                                  
+      language in home=spanish} => {ethnic classification=hispanic}  0.0313       0.89  7.0
+[9]  {occupation=student,                                                                  
+      language in home=spanish} => {ethnic classification=hispanic}  0.0106       0.89  7.0
+[10] {marital status=widowed,                                                              
+      language in home=spanish} => {ethnic classification=hispanic}  0.0012       0.89  7.0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \textbf{Mostre as 10 regras (juntamente com suporte, confiança e lift) com 
         maior confiança entre regras com suporte de ao menos 0.001, confiança
         ao menos 0.8, e tamanho máximo 3.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing}\hlstd{=}\hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{])}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+     lhs                                              rhs                             support confidence lift
+[1]  {marital status=widowed}                      => {dual incomes=not married}       0.0294          1  1.7
+[2]  {marital status=divorced}                     => {dual incomes=not married}       0.0979          1  1.7
+[3]  {marital status=single}                       => {dual incomes=not married}       0.4091          1  1.7
+[4]  {age=14-34,                                                                                             
+      ethnic classification=east indian}           => {income=$0-$40,000}              0.0012          1  1.6
+[5]  {income=$0-$40,000,                                                                                     
+      ethnic classification=east indian}           => {age=14-34}                      0.0012          1  1.7
+[6]  {marital status=cohabitation,                                                                           
+      ethnic classification=pacific islander}      => {age=14-34}                      0.0015          1  1.7
+[7]  {marital status=cohabitation,                                                                           
+      ethnic classification=pacific islander}      => {language in home=english}       0.0015          1  1.1
+[8]  {occupation=laborer,                                                                                    
+      ethnic classification=pacific islander}      => {education=no college graduate}  0.0015          1  1.4
+[9]  {occupation=clerical/service,                                                                           
+      ethnic classification=pacific islander}      => {language in home=english}       0.0015          1  1.1
+[10] {householder status=live with parents/family,                                                           
+      ethnic classification=pacific islander}      => {education=no college graduate}  0.0041          1  1.4
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \textbf{Plote as 10 regras com maior lift entre regras com suporte de ao menos
         0.001, confiança ao menos 0.8, e tamanho 3.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{)[}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{],} \hlkwc{method} \hlstd{=} \hlstr{"graph"}
+     \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{main} \hlstd{=} \hlkwa{NULL}\hlstd{,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-37-1} 
+
+}
+
+
+
+\end{knitrout}
 
 \textbf{Mostre todas as regras (juntamente com suporte, confiança e lift) com
         maior confiança entre regras com suporte de ao menos 0.001, confiança
         ao menos 0.7, tamanho máximo 3, tamanho mínimo 2 e que tenha
         `etnic classification=hispanic' do lado esquerdo da regra.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{rules} \hlkwb{<-} \hlkwd{apriori}\hlstd{(Income,} \hlkwd{list}\hlstd{(}
+  \hlkwc{support} \hlstd{=} \hlnum{.001}\hlstd{,} \hlkwc{confidence} \hlstd{=} \hlnum{.7}\hlstd{,} \hlkwc{maxlen} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{minlen} \hlstd{=} \hlnum{2}\hlstd{)}
+  \hlstd{,} \hlkwc{appearance} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{lhs} \hlstd{=} \hlstr{"ethnic classification=hispanic"}\hlstd{,} \hlkwc{default} \hlstd{=} \hlstr{"rhs"}\hlstd{)}
+  \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+\hlkwd{options}\hlstd{(}\hlkwc{digits} \hlstd{=} \hlnum{2}\hlstd{)}
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"confidence"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+    lhs                                 rhs                             support confidence lift
+[1] {ethnic classification=hispanic} => {education=no college graduate}   0.110       0.86  1.2
+[2] {ethnic classification=hispanic} => {income=$0-$40,000}               0.099       0.78  1.3
+[3] {ethnic classification=hispanic} => {age=14-34}                       0.090       0.71  1.2
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 \textbf{Explore os dados você mesmo. Mostre ao menos duas regras de associação
         que você achou interessante além das já apresentadas na lista.
         Justifique porque as achou interessantes.}
 
 \horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{rules} \hlkwb{<-} \hlkwd{apriori}\hlstd{(Income,} \hlkwd{list}\hlstd{(}\hlkwc{support} \hlstd{=} \hlnum{.2}\hlstd{,} \hlkwc{confidence} \hlstd{=} \hlnum{.8}\hlstd{,} \hlkwc{maxlen} \hlstd{=} \hlnum{3}\hlstd{)}
+                 \hlstd{,} \hlkwc{appearance} \hlstd{=} \hlkwd{list}\hlstd{(}
+                   \hlkwc{rhs} \hlstd{=} \hlstr{"marital status=married"}\hlstd{,} \hlkwc{default} \hlstd{=} \hlstr{"lhs"}\hlstd{)}
+                 \hlstd{,} \hlkwc{control} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{))}
+
+\hlkwd{inspect}\hlstd{(}\hlkwd{sort}\hlstd{(rules,} \hlkwc{by} \hlstd{=} \hlstr{"lift"}\hlstd{,} \hlkwc{decreasing} \hlstd{=} \hlnum{TRUE}\hlstd{))}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\begin{verbatim}
+    lhs                           rhs                        support confidence     lift
+[1] {dual incomes=yes,                                                                  
+     language in home=english} => {marital status=married} 0.2190227  0.9365672 2.428294
+[2] {dual incomes=yes}         => {marital status=married} 0.2370564  0.9357061 2.426061
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+No código acima encontramos as regras de decisão com maior suporte e lift que
+levam ao estado civil casado. Elas são: Renda dupla e língua inglesa utilizada
+em casa, e renda dupla. Essas duas regras apresentam uma confiança bem grande,
+0.94, ou seja, indivíduos com renda dupla e que falam inglês em casa tem alta
+probabilidade de serem casados.
 
 \section*{Exercício 3}
 \addcontentsline{toc}{section}{Exercício 3}
@@ -244,8 +1251,6 @@
            avaliações por usuário, compare a perfomance dos seguintes métodos
            com relação a quão boas as predições das notas são:}
 
-\horrule{.5pt}
-
 \vspace{-.5cm}
 \textbf{
  \begin{itemize}
@@ -260,7 +1265,45 @@
 \textbf{Você deve estimar o EQM (MSE em inglês), o REQM (RMSE em inglês) e o
         MAE.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlkwd{plot}\hlstd{(}
+  \hlkwd{evaluate}\hlstd{(}
+    \hlkwd{evaluationScheme}\hlstd{(}
+      \hlstd{MovieLense}
+      \hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"split"}
+      \hlstd{,} \hlkwc{train} \hlstd{=} \hlnum{.75}
+      \hlstd{,} \hlkwc{given} \hlstd{=} \hlnum{12}\hlstd{)}
+    \hlstd{,} \hlkwd{list}\hlstd{(}
+      \hlstr{"item-based k = 2"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{2}\hlstd{))}
+      \hlstd{,} \hlstr{"item-based k = 5"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{5}\hlstd{))}
+      \hlstd{,} \hlstr{"item-based k = 8"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{8}\hlstd{))}
+      \hlstd{,} \hlstr{"user-based k = 2"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{2}\hlstd{))}
+      \hlstd{,} \hlstr{"user-based k = 5"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{5}\hlstd{))}
+      \hlstd{,} \hlstr{"user-based k = 8"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{8}\hlstd{)))}
+    \hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"ratings"}
+  \hlstd{)}
+\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-41-1} 
+
+}
+
+
+
+\end{knitrout}
+
+No filtro colaborativo com base nos produtos melhores predições são obtidas com
+\(k = 2\), já no filtro colaborativo com base nos usuários melhores predições
+são obtidas com \(k = 8\), em que \(k\) é o número de produtos ou usuários
+mais parecidos.\\
 
 \textbf{b) Compare os mesmos métodos que o descrito no item anterior, mas 
            desta vez usando os métodos de avaliação com base nas \(N\) melhores
@@ -269,15 +1312,68 @@
            sensibilidade, 1 - especificidade, precisão e lembrança (recall)
            para \(N\) = 1, 5, 10, 20, 50 e 100 recomendações.}
 
-\horrule{.5pt} \\
+\horrule{.5pt}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{1, 1, 1}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# <code r> ================================================================== #}
+\hlstd{results} \hlkwb{<-} \hlkwd{evaluate}\hlstd{(}
+  \hlkwd{evaluationScheme}\hlstd{(}
+    \hlstd{MovieLense,} \hlkwc{method} \hlstd{=} \hlstr{"split"}\hlstd{,} \hlkwc{train} \hlstd{=} \hlnum{.75}\hlstd{,} \hlkwc{given} \hlstd{=} \hlnum{12}\hlstd{,} \hlkwc{goodRating} \hlstd{=} \hlnum{4}\hlstd{)}
+  \hlstd{,} \hlkwd{list}\hlstd{(}\hlstr{"item-based k = 2"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{2}\hlstd{))}
+         \hlstd{,} \hlstr{"item-based k = 5"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{5}\hlstd{))}
+         \hlstd{,} \hlstr{"item-based k = 8"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"IBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{k} \hlstd{=} \hlnum{8}\hlstd{))}
+         \hlstd{,} \hlstr{"user-based k = 2"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{2}\hlstd{))}
+         \hlstd{,} \hlstr{"user-based k = 5"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{5}\hlstd{))}
+         \hlstd{,} \hlstr{"user-based k = 8"} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{name} \hlstd{=} \hlstr{"UBCF"}\hlstd{,} \hlkwc{param} \hlstd{=} \hlkwd{list}\hlstd{(}\hlkwc{nn} \hlstd{=} \hlnum{8}\hlstd{)))}
+  \hlstd{,} \hlkwc{n} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{5}\hlstd{,} \hlnum{10}\hlstd{,} \hlnum{20}\hlstd{,} \hlnum{50}\hlstd{,} \hlnum{100}\hlstd{))}
+
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{),} \hlkwc{mar} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{5}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{2}\hlstd{)} \hlopt{+} \hlnum{.1}\hlstd{)}
+\hlkwd{plot}\hlstd{(results,} \hlkwc{annotate} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{6}\hlstd{))}
+\hlkwd{plot}\hlstd{(results,} \hlstr{"prec/rec"}\hlstd{,} \hlkwc{annotate} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{6}\hlstd{),} \hlkwc{legend} \hlstd{=} \hlstr{"topright"}\hlstd{) ;} \hlkwd{layout}\hlstd{(}\hlnum{1}\hlstd{)}
+\hlcom{# </code r> ================================================================= #}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{iBagens/unnamed-chunk-42-1} 
+
+}
+
+
+
+\end{knitrout}
+
+No gráfico da esquerda temos 1 - especificidade na abscissa e a sensibilidade
+na ordenada. No gráfico da direita temos a lembrança na abscissa e a precisão
+na ordenada. \\
+
+No filtro coloborativo com base nos produtos melhores resultados foram obtidos
+com \(k = 8\). No filtro colaborativo com base nos usuários melhores resultados
+foram obtidos também com \(k = 8\). \\
+
+Com relação a 1 - especificidade e sensibilidade, quanto maior o número de
+recomendações, \(N\), melhores são os resultados. De modo geral, com relação
+a precisão e a lembrança melhores resultados são obtidos com menores números de
+recomendações. \\
 
 \textbf{c) Alguns dos métodos foi uniformemente melhor que os outros?
            Justifique.}
 
-\horrule{.5pt}
+\horrule{.5pt} \\
+
+Quando olhamos para medidas como RMSE, MSE e MAE, ficamos com a impressão de
+que os filtros coloborativos com base nos usuários são menos influenciados pelo
+valor de \(k\), obtendo melhores resultados nas métricas RMSE e MSE. Quando
+olhamos para as medidas de sensibilidade, 1 - espeficidade, lembrança e 
+precisão, os filtros coloborativos com base nos produtos apresentam resultados
+mais semelhantes, independente de \(k\). Para \(k\)'s maiores os resultados dos
+filtros colaborativos com base no usuários se destacam. \\
+
+Nenhum dos métodos foi uniformemente melhor que os outros.
 
 \vspace{\fill}
 
-\horrule{1pt} \\
+\horrule{1pt}
 
 \end{document}

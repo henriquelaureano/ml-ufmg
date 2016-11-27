@@ -1,0 +1,33 @@
+```{r, fig.path="iBagens/"}
+ne <- factor(
+  c("1", "2 a 4", "5 a 7", "8 a 10", "11 ou 12")
+  , c("11 ou 12", "8 a 10", "5 a 7", "2 a 4", "1"))
+
+f <- c(108, 70, 67, 61, 28)
+
+library(latticeExtra)
+
+barchart(ne ~ f, col = "#0080ff", border = FALSE
+         , scales = list(x = list(draw = FALSE)), xlab = NULL
+         , main = "Frequência do número de avaliações por indivíduo"
+         , xlim = c(0, 120)
+         , panel = function(...){
+           panel.barchart(...)
+           args <- list(...)
+           panel.text(args$x, args$y, args$x, pos = 4)})
+
+ne <- factor(
+  c("1", "2 a 4", "5 a 7", "8 a 10", "11 a 13", "14 a 18")
+  , c("14 a 18", "11 a 13", "8 a 10", "5 a 7", "2 a 4", "1"))
+
+f <- c(18, 66, 209, 156, 155, 59)
+
+barchart(ne ~ f, col = "#0080ff", border = FALSE
+         , scales = list(x = list(draw = FALSE)), xlab = NULL
+         , main = "Frequência do número de avaliações por indivíduo"
+         , xlim = c(0, 225)
+         , panel = function(...){
+           panel.barchart(...)
+           args <- list(...)
+           panel.text(args$x, args$y, args$x, pos = 4)})
+```

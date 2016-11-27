@@ -1,0 +1,327 @@
+---
+title: Applications of continuous time hidden Markov models to the study
+       of misclassified disease outcomes
+author: Henrique Aparecido Laureano
+date: 21 de novembro de 2016
+header-includes:
+   - \institute[est171]{est171 - Aprendizado de Máquina \\
+                       Pós-Graduação em Estatística \\
+                       UFMG - Universidade Federal de Minas Gerais}
+   - \setbeamertemplate{navigation symbols}{}
+   - \usepackage{bm}
+   - \usepackage{multicol}
+output: 
+  beamer_presentation:
+    theme: Szeged
+    colortheme: rose
+    fonttheme: structurebold
+    highlight: kate
+    slide_level: 3
+    keep_tex: yes
+    fig_caption: no
+---
+
+### Roteiro
+
+\tableofcontents
+
+# Contextualizando
+
+***
+
+\vspace{.25cm}
+\begin{block}{Autores}
+ Alexander Bureau \\
+ \hskip 3cm \textit{Group in Biostatistics, School of Public Health, \\
+ \hskip 3cm         University of California, Berkeley} \\
+ \vspace{.25cm}
+ Stephen Shiboski \\
+ \hskip 3cm \textit{Department of Epidemiology and Biostatistics, \\
+ \hskip 3cm         University of California, San Francisco} \\
+ \vspace{.25cm}
+ James P. Hughes \\
+ \hskip 2.5cm \textit{Department of Biostatistics, \\
+ \hskip 2.5cm         School of Public Health and Community Medicine, \\
+ \hskip 2.5cm         University of Washington}
+\end{block}
+
+***
+
+\vspace{.2cm}
+\begin{columns}
+ \begin{column}{.33\textwidth}
+  \begin{center}
+   \includegraphics*[height = 4.5cm, width = 3.5cm]{bureau.jpg}
+  \end{center}
+ \end{column}
+ \begin{column}{.33\textwidth}
+  \begin{center}
+    \includegraphics*[height = 4.5cm, width = 3.5cm]{shiboski.jpg}
+  \end{center}
+ \end{column}
+ \begin{column}{.33\textwidth}
+  \begin{center}
+    \includegraphics*[height = 4.5cm, width = 3.5cm]{hughes.jpg}
+  \end{center}
+ \end{column}
+\end{columns}
+
+\vspace{.3cm}
+\begin{block}{Publicação}
+ \textit{Statistics in Medicine}. 2003; \textbf{22}:441-462
+ (DOI: 10.1002/sim.1270)
+\end{block}
+
+***
+
+\vspace{.25cm}
+\begin{block}{Artigo}
+ Aplicação de modelos markovianos ocultos de tempo contínuo em medidas
+ longitudinais de doenças com resposta binária \\
+ \vspace{.25cm}
+ A resposta da doença é representada por um processo markoviano 
+ homogêneo de dois estados em tempo contínuo
+\end{block}
+
+\vspace{.5cm}
+\pause
+\begin{block}{Modelo markoviano oculto}
+ Extensão de modelos markovianos que fornece uma maneira de lidar com 
+ possíveis erros de classificação devido ao processo de avaliação
+\end{block}
+
+# Modelo markoviano oculto
+
+***
+
+\vspace{.2cm}
+\begin{block}{Variáveis}
+ \(T_{ij} \rightarrow
+ \text{tempo cronológico das avaliações}\) \\
+ \vspace{.2cm}
+ \(Y_{ij} \rightarrow
+ \text{medida dicotômica da resposta da doença}\) \\
+ \vspace{.2cm}
+ \(\textbf{Z}_{ij} \rightarrow
+ \text{vetor } 1 \times p \text{ de covariáveis}\) \\
+ \vspace{.3cm}
+ em que \(i\) representa o indivíduo e \(j\) a avaliação \\
+ \vspace{.3cm}
+ \pause
+ \(X(t), t > 0 \rightarrow \text{status atual subjacente da doença}\) \\
+ \hskip 2.4cm (Modelado como um processo markoviano em tempo \\
+ \hskip 2.6cm  contínuo de dois estados) \\
+ \vspace{.3cm}
+ \pause
+ \(Y_{^1}^{j} \text{ e } T_{1}^{j}\) denotam a sequência de 1 até \(j\)
+ de estados observados da doença e tempos de avaliação \\
+ (O índice \(i\) denotando o indivíduo é omitido)
+\end{block}
+
+***
+
+\vspace{.3cm}
+\pause
+\begin{block}{Suposição markoviana para o processo oculto da doença}
+ \vspace{-.45cm}
+ \footnotesize
+ \[\begin{aligned}
+   P[X(t_{j})|X(t_{1}), ..., X(t_{j-1}), Y_{1}^{j-1},
+   T_{1}^{j} = t_{1}^{j}] & = P[X(t_{j})|X(t_{j-1}),
+                              T_{j-1}^{j} = t_{j-1}^{j}] \\
+                          & = P_{x_{j-1}, x_{j}}(t_{j} - t_{j-1})
+   \end{aligned}\]
+\end{block}
+
+\vspace{.6cm}
+\pause
+\begin{block}{Probabilidade de classificar corretamente ou
+              incorretamente o estado da doença dado o verdadeiro
+              estado}
+ \vspace{-.45cm}
+ \footnotesize
+ \[P[Y_{j}|X(t_{1}), ..., X(t_{j}), Y_{1}^{j-1}, T_{1}^{j} = t_{1}^{j}]
+   = P[Y_{j}|X(t_{j}), T_{j} = t_{j}] = f(y_{j}|x_{j})\]
+\end{block}
+
+***
+
+\vspace{.35cm}
+\begin{block}{Processo oculto em tempo contínuo de dois estados}
+ \vspace{-.25cm}
+ \begin{itemize}
+  \pause \item Intensidade de aquisição da manifestação da doença, \(u\)
+  \pause \item Intensidade de remoção, \(v\)
+ \end{itemize}
+\end{block}
+
+\vspace{.5cm}
+\pause
+\begin{block}{Probabilidades de transição}
+ \vspace{-.5cm}
+ \small
+ \[P_{01}(t) = \frac{u}{u+v}(1-\exp\{-(u+v)t\}) \quad
+   P_{10}(t) = \frac{v}{u+v}(1-\exp\{-(u+v)t\})\]
+\end{block}
+
+***
+
+\vspace{.15cm}
+\begin{block}{Intensidade de aquisição sobre o intervalo
+              [\(t_{j-1}, t_{j}\)] como função de \(p\) covariáveis}
+ \vspace{-.5cm}
+ \[u_{i, j}(z_{ij}) =
+   \exp\left\{\theta_{u0}+\sum_{k=1}^{p}\theta_{uk}z_{ijk}\right\},\] \\
+ \vspace{.15cm}
+ \pause a expressão para a intensidade de remoção é similar
+\end{block}
+
+\vspace{-.1cm}
+\pause
+\begin{block}{Verossimilhança para as \(m\) observações de um indivíduo}
+ \vspace{-.95cm}
+ \pause
+ \[\begin{aligned}
+   L(\theta) & = P[Y_{1}^{m}|T_{1}^{m} = t_{1}^{m},
+                             Z_{1}^{m} = z_{1}^{m}, \theta] \\
+             & = \sum_{x_{1} ... x_{m}}
+                 P[Y_{1}^{m}, X_{1}^{m}|T_{1}^{m} = t_{1}^{m},
+                                        Z_{1}^{m} = z_{1}^{m}, \theta]\\
+             & = \sum_{x_{1} ... x_{m}}
+                 \pi_{x_{1}|z_{1}} f(y_{1}|x_{1}, z_{1})
+                 \prod_{j = 2}^{m}
+                  P_{x_{j-1}, x_{j}}(t_{j} - t_{j-1})
+                  f(y_{j}|x_{j}, z_{j})
+   \end{aligned}\]
+ \vspace{-.5cm}
+\end{block}
+
+# Aplicações
+
+## Leucoplasia pilosa
+
+***
+
+\vspace{.25cm}
+\pause
+\begin{block}{Leucoplasia pilosa}
+ \pause
+ \vspace{-.2cm}
+ Lesão na língua causada pelo Vírus Epstein-Barr (VEB), acredita-se \\
+ \vspace{.2cm}
+ Muito frequente em pacientes infectados pelo vírus HIV
+\end{block}
+
+\vspace{.1cm}
+\begin{columns}
+ \begin{column}{.4\textwidth}
+
+\pause
+  \begin{block}{Estudo}
+   334 homens do \textit{San Francisco Men's Health Study}
+  \pause
+   \begin{itemize}
+    \item Duração: fevereiro de 1987 até maio 1993
+    \item Avaliação: Semestral
+   \end{itemize}
+  \end{block}
+ 
+ \end{column}
+ \begin{column}{.6\textwidth}
+ \vspace{.25cm}
+ \pause
+  \includegraphics*[
+   height = 4.75cm, width = 6.75cm]{iBagens/unnamed-chunk-1-1.png}
+
+ \end{column}
+\end{columns}
+
+***
+
+\footnotesize \textit{Intensidades de transição (transição/mês)
+                      estimadas para um modelo markoviano e para o
+                      modelo markoviano oculto}
+
+\includegraphics*[height = 1.7cm]{iBagens/t1.png}
+
+\pause
+\vspace{.2cm}
+\textit{Estimativas dos efeitos das covariáveis em modelos com apenas  
+        uma covariável}
+
+\includegraphics*[height = 3.1cm]{iBagens/t2.png}
+
+## Infecção por HPV
+
+***
+
+\pause
+\begin{block}{Infecção por HPV}
+ \pause
+ \vspace{-.2cm}
+ O HPV (papilomavírus humano) compreende uma diversidade grande de
+ subtipos (mais de 70), que provocam desde o aparecimento de verrugas na
+ pele e nas mucosas até doenças graves como o câncer do colo do útero \\
+ \vspace{.4cm}
+ Os subtipos 16 e 18 são de alto risco para o câncer do colo do útero
+\end{block}
+
+***
+
+\begin{columns}
+ \begin{column}{.4\textwidth}
+
+  \begin{block}{Estudo}
+  \pause
+   663 mulheres em San Francisco
+  \pause
+   \begin{itemize}
+    \item Início: 1990
+    \item Avaliação: Quadrimestral
+   \end{itemize}
+  \end{block}
+ 
+ \end{column}
+ \begin{column}{.6\textwidth}
+ \vspace{.25cm}
+ \pause
+  \includegraphics*[
+   height = 5cm, width = 6.75cm]{iBagens/unnamed-chunk-1-2.png}
+
+ \end{column}
+\end{columns}
+
+***
+
+\textit{Itensidades de transição (transição/mês) estimadas para o 
+        modelo markoviano oculto}
+
+\includegraphics*[height = 1.6cm]{iBagens/t3.png}
+
+\vspace{.5cm}
+\pause
+\textit{Probabilidades de observação dado os estados ocultos}
+
+\centering \includegraphics*[height = 1.7cm]{iBagens/t4.png}
+
+# Considerações finais
+
+***
+
+\begin{block}{Considerações finais}
+ \pause
+ Extensões interessantes a serem desenvolvidas:
+ \begin{itemize}
+  \item Possibilitar a interação entre múltiplos processos ocultos
+ \end{itemize}
+ \pause
+ Modificações para possibilitar que intensidades de transições variem ao
+ longo do tempo \\
+ \vspace{.25cm}
+ \pause
+ Elaboração de técnicas de diagnóstico mais sofisticadas
+\end{block}
+
+***
+
+\LARGE \centering Obrigado por seu tempo!

@@ -28,3 +28,5 @@ Repository with the developed activities for discipline est171
 * [List 4](http://mynameislaure.github.io/ml-ufmg-list_4/master.pdf)
 
 * [Article presentation](http://mynameislaure.github.io/ml-ufmg-article/master.pdf)
+
+* [Poster](http://mynameislaure.github.io/ml-ufmg-poster/master.pdf)

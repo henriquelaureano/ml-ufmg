@@ -1,0 +1,215 @@
+\documentclass[a0, portrait]{a0poster}
+
+\usepackage[brazilian, brazil]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[export]{adjustbox}
+\usepackage{multicol}
+\columnsep = 100pt
+\columnseprule = 3pt
+
+\usepackage[svgnames]{xcolor}
+% http://www.latextemplates.com/svgnames-colors
+
+\usepackage{times} % Use the times font
+%\usepackage{palatino} % Uncomment to use the Palatino font
+
+\usepackage{graphicx}
+\graphicspath{{iBagens/}}
+\usepackage{booktabs} % Top and bottom rules for table
+\usepackage[font = small,labelfont = bf]{caption}
+% Required for specifying captions to tables and figures
+\usepackage{amsfonts, amsmath, amsthm, amssymb}
+\usepackage{wrapfig} % Allows wrapping text around tables and figures
+
+\begin{document}
+
+\begin{minipage}[b]{0.75\linewidth}
+\veryHuge \color{NavyBlue}
+\textbf{Breast Cancer Wisconsin (Diagnostic) Data Set}
+\color{Black} \\
+\Huge\textit{Predict whether the cancer is benign or malignant} \\[2cm]
+\huge \textbf{Henrique Aparecido Laureano} \\[0.5cm]
+\huge est171 - Aprendizado de Máquina \\[0.4cm]
+\Large \texttt{henriquelaureano@outlook.com} \\
+\end{minipage}
+%
+\begin{minipage}[b]{0.25\linewidth}
+\includegraphics[width=12.5cm, center]{ufmg.jpg} \\[.3cm]
+\includegraphics[width=20cm, right]{est_ufmg.jpg} \\
+\end{minipage}
+
+\vspace{1cm}
+
+\begin{multicols}{2}
+
+\large
+
+\color{Navy}
+
+\section*{Dados}
+
+Dataset fornecido pela UCI Machine Learning e hospedado no
+\textbf{Kaggle} [1]. Temos 569 pacientes, 357 (63\%) com câncer benigno
+e 212 (37\%) com câncer maligno.
+
+Através da imagem digitalizada de um tipo de biópsia de mama
+não-cirúrgica chamada de FNA (\textit{fine needle aspiration}),
+aspiração por agulha fina, dez características são mensuradas para
+cadanúcleo celular:
+
+\begin{multicols}{2}
+\begin{enumerate}
+\item raio (média das distâncias do centro aos pontos no perímetro
+\item textura (desvio padrão dos valores da escala de cinza)
+\item perímetro
+\item área
+\item suavidade (variação local dos comprimentos do raio)
+\item compacidade (perímetro$^{2}$ / área - 1)
+\item concavidade (gravidade das porções côncavas do contorno)
+\item pontos côncavos (número de porções côncavas do contorno)
+\item simetria
+\item dimensão fractal (aproximação \textit{coastline} - 1)
+\end{enumerate}
+\end{multicols}
+
+Para cada imagem, e consequentemente para cada paciente, a média, erro
+padrão e "pior" \hskip 7pt ou maior (média dos três maiores valores) 
+valor dessas características são computadas, resultando em 30 variáveis.
+A base de dados foi dividida em treino (285 pacientes) e teste (169
+pacientes, 72 benignos e 43 malignos).
+
+\vspace{-.5cm}
+\color{DarkSlateGray}
+
+\section*{Objetivos}
+
+Com o objetivo de verificar com quais dessas medidas (médias, erros
+padrão ou maiores) conseguimos melhor classificar o câncer em benigno ou
+maligno, quatorze algoritmos de classificação foram utilizados, com cada
+um sendo utilizado três vezes, uma vez considerando apenas as variáveis
+correspondentes as médias, outra com os erros padrões e outra com os
+"piores" \hskip 7pt (\textit{worst}) valores.
+
+\vspace{-.5cm}
+\color{SaddleBrown}
+
+\section*{Resultados}
+
+Na Tabela \ref{table1} temos o risco estimado e a área abaixo da curva,
+AUC, da curva ROC para os quatorze classificadores. Para o algoritmo
+KNN foi obtido e utilizado um número de vizinhos igual a 5, 18 e 27,
+respectivamente.
+
+De maneira geral, o classificador com melhor desempenho foi a regressão
+logística e piores resultados foram obtidos utilizando as variáveis de
+erro padrão.
+
+\vspace{1cm}
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{Mean}
+& \multicolumn{2}{c}{Standard error}
+& \multicolumn{2}{c}{Worst} \\
+\cmidrule(r){2-3} \cmidrule(r){4-5} \cmidrule(r){6-7}
+& Risco & AUC & Risco & AUC & Risco & AUC \\
+\midrule
+Regressão logística
+& 0.0435 & \underline{0.9948} & \underline{0.0609} & \underline{0.9855}
+& \underline{\textbf{0.0087}} & \underline{\textbf{0.9994}} \\
+Regressão linear
+& 0.0522 & 0.9939 & 0.0869 & 0.9609 & \textbf{0.0174} & \textbf{0.9958}
+\\
+Naive Bayes
+& \textbf{0.0783} & 0.9094 & 0.1043 & 0.8651 & \textbf{0.0783}
+& \textbf{0.9141} \\
+Discriminante linear
+& \textbf{0.0435} & \textbf{0.9465} & 0.1478 & 0.8117 & 0.0522 & 0.9349
+\\
+Discriminante quadrático
+& 0.0696 & 0.921 & 0.113 & 0.8723 & \textbf{0.0435} & \textbf{0.9559} \\
+Discriminante regularizado
+& \textbf{0.1043} & \textbf{0.8698} & 0.113 & 0.8488 & \textbf{0.1043}
+& 0.8651 \\
+KNN
+& 0.0696 & 0.9448 & \underline{0.0609} & 0.9629 & \textbf{0.0522}
+& \textbf{0.9905} \\
+SVM linear
+& 0.0435 & 0.9465 & 0.087 & 0.9025 & \textbf{0.0261} & \textbf{0.9698}
+\\
+SVM polinomial
+& \textbf{0.0435} & \textbf{0.9512} & 0.1217 & 0.8513 & 0.0522 & 0.9349
+\\
+SVM radial
+& \textbf{0.0348} & \textbf{0.9582} & 0.113 & 0.8676 & 0.0435 & 0.9465
+\\
+SVM sigmoidal
+& 0.0435 & 0.9465 & 0.1043 & 0.8698 & \textbf{0.0348} & \textbf{0.9535}
+\\
+Árvore de classificação
+& \textbf{0.0522} & \textbf{0.9536} & 0.0783 & 0.9141 & 0.087 & 0.9165
+\\
+Bagging
+& \textbf{0.0348} & \textbf{0.9675} & \underline{0.0609} & 0.9373
+& 0.0609 & 0.9443 \\
+Boosting
+& \underline{\textbf{0.0261}} & \textbf{0.9792} & 0.0783 & 0.9141
+& 0.0522 & 0.9443 \\
+\bottomrule
+\end{tabular}
+\captionof{table}{\color{Green}
+ Riscos e AUC dos algoritmos ajustados a base de dados}
+\label{table1}
+\end{center}
+\vspace{.6cm}
+
+Na Tabela \ref{table2} são apresentados os erros e acertos de
+classificação dos melhores algoritmos para cada grupo de variáveis.
+
+\vspace{1cm}
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{Boosting}
+& \multicolumn{4}{c}{Regressão logística} \\
+\cmidrule(r){2-3} \cmidrule(r){4-7}
+& \multicolumn{2}{c}{Mean}
+& \multicolumn{2}{c}{Standard error}
+& \multicolumn{2}{c}{Worst} \\
+\cmidrule(r){2-3} \cmidrule(r){4-5} \cmidrule(r){6-7}
+& Benigno & Maligno & Benigno & Maligno & Benigno & Maligno \\
+\midrule
+Benigno & 69 & 3 & 67 & 5 & 69 & 3 \\
+Maligno & 0 & 43 & 2 & 41 & 0 & 43 \\
+\bottomrule
+\end{tabular}
+\captionof{table}{\color{Green}
+ Matrizes de confusão para os melhores classificadores ajustados a base
+ de dados}
+\label{table2}
+\end{center}
+
+\color{Navy}
+
+\section*{Referências}
+
+[1] https://www.kaggle.com/uciml/breast-cancer-wisconsin-data
+
+\begin{center}
+\includegraphics{plot1}
+\includegraphics{plot2}
+\includegraphics{plot3}
+\includegraphics{plot4}
+\includegraphics{plot5}
+\includegraphics{plot6}
+\captionof{figure}{\color{Green}
+ Gráficos de dispersão das variáveis significativas na regressão 
+ logística considerando apenas as variáveis correspondentes aos maiores
+ ou piores (\textit{worst}) valores das características. Coluna da
+ esquerda: Diagnóstico (câncer benigno ou maligno) observado; Coluna da
+ direita: Diagnóstico predito}
+\end{center}
+
+\end{multicols}
+\end{document}

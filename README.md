@@ -11,7 +11,7 @@ Repository with the developed activities for the course est171
 * Course: Graduation in Statistics
 * Period: 2o half of 2016
 * Course page: [est171](http://est.ufmg.br/~marcosop/est171-ML/index.htm)
-* Professor: [Marcos Oliveira Prates](http://est.ufmg.br/~marcosop/)
+* Professor: [Prof. Ph.D. Marcos Oliveira Prates](http://est.ufmg.br/~marcosop/)
 
 * Student: [Henrique Aparecido Laureano](http://lattes.cnpq.br/2224901552085090)
 
